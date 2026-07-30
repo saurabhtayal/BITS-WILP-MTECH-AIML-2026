@@ -1,0 +1,5 @@
+This is a sample text file for question 8.
+This file contains several words and repeated words. This sample text is used to demonstrate word frequency counting.
+
+This file contains several words and repeated words. This sample text is used to demonstrate word frequency counting.
+The words in this file will be counted and the most frequent words will be displayed. This file contains repeated words to test the program.

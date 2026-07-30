@@ -1,0 +1,6 @@
+This is demo file.
+It contains many lines in it.
+Some lines are big, some are small.
+Any python program can read this file.
+Any python program can write into this file.
+
