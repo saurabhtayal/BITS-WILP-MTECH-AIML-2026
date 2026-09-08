@@ -1,0 +1,6 @@
+Model,Features,Train RMSLE,Val RMSLE,Observations
+Baseline OLS Regression,"temp, humidity, windspeed",1.4331697338805116,1.3793012638698083,High bias. Cannot capture hour or season effects.
+Engineered OLS (Log target),"All features including hour, year, peak-hour indicator",0.7313057952667604,0.7088353298968337,Dramatic performance boost. Captures time-of-day and growth trends.
+"Polynomial OLS (Degree 2, Log target)",Degree 2 weather features + time features,0.7286342229857123,0.7041610984897465,"Captures temperature curvature well, further reducing error."
+Ridge Regression (alpha=1.0),Scaled Polynomial features + time features,0.7286345059218484,0.704174069269636,Regularization controls model complexity. High stability.
+Lasso Regression (alpha=0.001),Scaled Polynomial features + time features,0.728927182415936,0.7045625005548304,"Performs L1 penalty, zeroing out uninformative polynomial terms."
