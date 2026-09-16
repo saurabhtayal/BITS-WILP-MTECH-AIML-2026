@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ex-2 &middot; Introduction to Discrete Probability &mdash; Answer Key</title>
+<style>
+:root{
+  --bg:#fbfaf7; --panel:#ffffff; --ink:#1c1b19; --muted:#5f5b54; --rule:#e2ddd3;
+  --accent:#8a5a2b; --accent-soft:#f5ede2;
+  --ans-bg:#eef6ef; --ans-bd:#3f7d4e; --ans-ink:#1d4427;
+  --note-bg:#fdf4e3; --note-bd:#b8860b; --note-ink:#5c430b;
+  --data-bg:#eef3f8; --data-bd:#4a6f96; --data-ink:#243b52;
+  --interp-bg:#f6f2f8; --interp-bd:#7a5a92; --interp-ink:#3d2b4a;
+  --code:#f3f1ec;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16161a; --panel:#1d1e23; --ink:#e6e3dd; --muted:#a09a90; --rule:#33343b;
+    --accent:#d5a26a; --accent-soft:#2a2520;
+    --ans-bg:#18271c; --ans-bd:#5c9b6d; --ans-ink:#bfe4c9;
+    --note-bg:#2a2313; --note-bd:#c9a34a; --note-ink:#ecd9a8;
+    --data-bg:#1a222c; --data-bd:#6d94bd; --data-ink:#c6dbf0;
+    --interp-bg:#241d2b; --interp-bd:#a487bd; --interp-ink:#dcc9e8;
+    --code:#26272c;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:16px/1.65 "Charter","Bitstream Charter","Georgia","Cambria",serif;
+  padding:0 1rem 6rem;
+}
+.wrap{max-width:52rem;margin:0 auto}
+header.doc{
+  border-bottom:3px double var(--rule); margin:2.5rem 0 0; padding-bottom:1.1rem;
+}
+header.doc h1{font-size:1.7rem;line-height:1.25;margin:0 0 .35rem;letter-spacing:-.01em}
+header.doc .sub{color:var(--muted);font-size:.92rem;font-style:italic}
+h1,h2,h3,h4{font-weight:600}
+h2{
+  font-size:1.28rem; margin:3.2rem 0 .3rem; padding:.55rem .8rem;
+  background:var(--accent-soft); border-left:4px solid var(--accent); border-radius:0 4px 4px 0;
+  scroll-margin-top:1rem;
+}
+h3{font-size:1.04rem;margin:1.9rem 0 .5rem;color:var(--accent);letter-spacing:.01em}
+h4{font-size:.95rem;margin:1.2rem 0 .4rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+p{margin:.7rem 0}
+hr{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
+a{color:var(--accent)}
+code{background:var(--code);padding:.1em .35em;border-radius:3px;font-family:"DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em}
+pre{
+  background:var(--code); padding:.9rem 1rem; border-radius:6px; overflow-x:auto;
+  border:1px solid var(--rule); font-size:.83rem; line-height:1.45;
+  font-family:"DejaVu Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+pre code{background:none;padding:0;font-size:inherit}
+ul,ol{padding-left:1.4rem;margin:.6rem 0}
+li{margin:.28rem 0}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:3px solid var(--rule);color:var(--muted)}
+
+/* ---- tables ---- */
+.tablewrap{overflow-x:auto;margin:1.1rem 0}
+table{border-collapse:collapse;font-size:.9rem;min-width:min(100%,22rem);
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+th,td{border:1px solid var(--rule);padding:.4rem .7rem;text-align:right}
+th{background:var(--accent-soft);font-weight:600;text-align:center;white-space:nowrap}
+td:first-child,th:first-child{text-align:left}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--panel) 60%,var(--bg))}
+
+/* ---- callouts ---- */
+.cal{border-radius:6px;padding:.75rem 1rem;margin:1rem 0;border-left:4px solid}
+.cal > :first-child{margin-top:0}
+.cal > :last-child{margin-bottom:0}
+.cal .tag{display:block;font-family:system-ui,sans-serif;font-size:.68rem;font-weight:700;
+          letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:.35rem}
+.answer{background:var(--ans-bg);border-color:var(--ans-bd);color:var(--ans-ink)}
+.note  {background:var(--note-bg);border-color:var(--note-bd);color:var(--note-ink)}
+.data  {background:var(--data-bg);border-color:var(--data-bd);color:var(--data-ink)}
+.interp{background:var(--interp-bg);border-color:var(--interp-bd);color:var(--interp-ink)}
+.answer strong,.note strong,.data strong,.interp strong{color:inherit}
+
+/* ---- math ---- */
+math{font-size:1.05em}
+.mathblock{display:block;text-align:center;margin:1.15rem 0;overflow-x:auto;overflow-y:hidden;padding:.25rem 0}
+.mathblock .katex{display:inline-block}
+.mathblock math{font-size:1.12em;display:inline-block}
+.cal .mathblock{margin:.8rem 0}
+
+/* ---- toc ---- */
+nav.toc{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:.9rem 1.2rem;margin:1.6rem 0 0}
+nav.toc h4{margin:0 0 .5rem}
+nav.toc ol{margin:0;padding-left:1.3rem;font-size:.9rem;
+           font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+nav.toc a{text-decoration:none}
+nav.toc a:hover{text-decoration:underline}
+
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  h2{background:none;border-left:3px solid #000}
+  .cal{border:1px solid #999;background:none;color:#000}
+  nav.toc{display:none}
+}
+@media (max-width:600px){
+  body{font-size:15px;padding:0 .7rem 4rem}
+  h2{font-size:1.13rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="doc"><h1>Ex-2 &middot; Introduction to Discrete Probability &mdash; Answer Key</h1><div class="sub">Introduction to Statistical Methods &middot; BITS Pilani M.Tech (AI &amp; ML), Semester 1 &middot; final values only, for quick self-checking</div></header>
+<nav class="toc"><h4>Contents</h4><ol><li><a href="#p1">Problem 8 — Zoning, two-step process</a></li><li><a href="#p2">Problem 9 — Number of possible samples</a></li><li><a href="#p3">Problem 10 — Student debt</a></li><li><a href="#p4">Problem 11 — Seat belt usage</a></li><li><a href="#p5">Problem 12 — Powerball</a></li><li><a href="#p6">Problem 18 — Family meals at home (<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>496</mn></mrow><annotation encoding="application/x-tex">n=496</annotation></semantics></math></span>)</a></li><li><a href="#p7">Problem 19 — Sports participation</a></li><li><a href="#p8">Problem 20 — Fortune 500 by state</a></li><li><a href="#p9">Problem 21 — U.S. adult population by age</a></li></ol></nav>
+<p>Final values only — no working. For the full derivations see <a href="Ex-2_Solutions.html"><code>Ex-2_Solutions.html</code></a>.</p>
+<p>Probabilities are given to 4 decimal places, with the exact fraction alongside where it is informative.</p>
+<hr>
+<h2 id="p1">Problem 8 — Zoning, two-step process</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>2</mn><mo>×</mo><mn>2</mn><mo>=</mo><mn mathvariant="bold">4</mn></mrow><annotation encoding="application/x-tex">N=2\times 2=\mathbf{4}</annotation></semantics></math></span> sample points: <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>P</mi><mo separator="true">,</mo><mi>A</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(P,A)</annotation></semantics></math></span>, <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>P</mi><mo separator="true">,</mo><mi>D</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(P,D)</annotation></semantics></math></span>, <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>N</mi><mo separator="true">,</mo><mi>A</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(N,A)</annotation></semantics></math></span>, <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>N</mi><mo separator="true">,</mo><mi>D</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(N,D)</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>b</td>
+<td>Tree with 2 first-stage branches (Positive / Negative), each splitting into 2 (Approve / Disapprove) → 4 complete paths</td>
+</tr>
+</tbody></table></div>
+<h2 id="p2">Problem 9 — Number of possible samples</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mn>4</mn><mn>50</mn></msubsup><mo>=</mo><mstyle scriptlevel="0" displaystyle="true"><mfrac><mrow><mn>50</mn><mo>⋅</mo><mn>49</mn><mo>⋅</mo><mn>48</mn><mo>⋅</mo><mn>47</mn></mrow><mrow><mn>4</mn><mo stretchy="false">!</mo></mrow></mfrac></mstyle></mrow><annotation encoding="application/x-tex">C^{50}_{4}=\dfrac{50\cdot49\cdot48\cdot47}{4!}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="bold">230,300</mn></mrow><annotation encoding="application/x-tex">\mathbf{230{,}300}</annotation></semantics></math></span></td>
+</tr>
+</tbody></table></div>
+<h2 id="p3">Problem 10 — Student debt</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Quantity</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>debt</mtext><mo>∣</mo><mtext>Morehouse</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\text{debt}\mid\text{Morehouse})</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.94</mn></mrow><annotation encoding="application/x-tex">0.94</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>b</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mo>&gt;</mo><mn>60</mn><mi mathvariant="normal">%</mi><mtext> with debt</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(&gt;60\%\text{ with debt})</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>5</mn><mn>8</mn></mfrac></mstyle><mo>=</mo><mn>0.625</mn></mrow><annotation encoding="application/x-tex">\tfrac{5}{8}=0.625</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>c</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>avg debt</mtext><mo>&gt;</mo><mi mathvariant="normal">$</mi><mn>30,000</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\text{avg debt}&gt;\$30{,}000)</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>2</mn><mn>8</mn></mfrac></mstyle><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">\tfrac{2}{8}=0.25</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>d</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>no debt</mtext><mo>∣</mo><mtext>Pace</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\text{no debt}\mid\text{Pace})</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.28</mn></mrow><annotation encoding="application/x-tex">0.28</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>e</td>
+<td>Average debt per Pace graduate</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold">$</mi><mn mathvariant="bold">23,745.60</mn></mrow><annotation encoding="application/x-tex">\mathbf{\$23{,}745.60}</annotation></semantics></math></span></td>
+</tr>
+</tbody></table></div>
+<p><strong>b:</strong> qualifying institutions are Pace (72), Iowa State (69), SUNY–Albany (64), Wartburg (83), Morehouse (94).
+<strong>c:</strong> qualifying institutions are Pace ($32,980) and Iowa State ($32,130).
+<strong>e:</strong> <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.72</mn><mo>×</mo><mn>32,980</mn><mo>+</mo><mn>0.28</mn><mo>×</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0.72\times32{,}980+0.28\times 0</annotation></semantics></math></span> — the $32,980 is an average <em>among those with debt only</em>.</p>
+<h2 id="p4">Problem 11 — Seat belt usage</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Quantity</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>seat belt</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\text{seat belt})</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>858</mn><mn>1086</mn></mfrac></mstyle><mo>=</mo><mn>0.7901</mn></mrow><annotation encoding="application/x-tex">\tfrac{858}{1086}=0.7901</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>b</td>
+<td>Pleased?</td>
+<td><strong>Yes</strong> — 0.79 beats both the 0.75 prior year and the 0.78 target</td>
+</tr>
+</tbody></table></div>
+<p><strong>c — usage by region</strong> (divide by row total):</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Region</th>
+<th><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>belt</mtext><mo>∣</mo><mtext>region</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\text{belt}\mid\text{region})</annotation></semantics></math></span></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Northeast</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.74</mn></mrow><annotation encoding="application/x-tex">0.74</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>Midwest</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.75</mn></mrow><annotation encoding="application/x-tex">0.75</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>South</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.80</mn></mrow><annotation encoding="application/x-tex">0.80</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td><strong>West</strong></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="bold">0.84</mn></mrow><annotation encoding="application/x-tex">\mathbf{0.84}</annotation></semantics></math></span> ← highest</td>
+</tr>
+</tbody></table></div>
+<p><strong>d — share of sample</strong> (divide by 1,086):</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Region</th>
+<th>Proportion</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Northeast</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1842</mn></mrow><annotation encoding="application/x-tex">0.1842</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>Midwest</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1989</mn></mrow><annotation encoding="application/x-tex">0.1989</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td><strong>South</strong></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="bold">0.3407</mn></mrow><annotation encoding="application/x-tex">\mathbf{0.3407}</annotation></semantics></math></span> ← most</td>
+</tr>
+<tr>
+<td><em>West</em></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.2762</mn></mrow><annotation encoding="application/x-tex">0.2762</annotation></semantics></math></span> ← second most</td>
+</tr>
+</tbody></table></div>
+<p><strong>e: Yes, the estimate in (a) is too high.</strong> The sample over-represents the South and West — the two <em>highest</em>-usage regions — and under-represents the Northeast and Midwest. With equal regional populations the correct figure would be the unweighted mean <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mn>0.74</mn><mo>+</mo><mn>0.75</mn><mo>+</mo><mn>0.80</mn><mo>+</mo><mn>0.84</mn></mrow><mn>4</mn></mfrac><mo>=</mo><mn mathvariant="bold">0.7825</mn></mrow><annotation encoding="application/x-tex">\frac{0.74+0.75+0.80+0.84}{4}=\mathbf{0.7825}</annotation></semantics></math></span>, below the <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.7901</mn></mrow><annotation encoding="application/x-tex">0.7901</annotation></semantics></math></span> of part (a).</p>
+<h2 id="p5">Problem 12 — Powerball</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Quantity</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mn>5</mn><mn>55</mn></msubsup></mrow><annotation encoding="application/x-tex">C^{55}_{5}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="bold">3,478,761</mn></mrow><annotation encoding="application/x-tex">\mathbf{3{,}478{,}761}</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>b</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>$200,000 prize</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\text{\$200,000 prize})</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>1</mn><mn>3,478,761</mn></mfrac></mstyle><mo>≈</mo><mn>2.87</mn><mo>×</mo><msup><mn>10</mn><mrow><mo>−</mo><mn>7</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\tfrac{1}{3{,}478{,}761}\approx 2.87\times10^{-7}</annotation></semantics></math></span> (1 in 3.48 million)</td>
+</tr>
+<tr>
+<td>c</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>jackpot</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\text{jackpot})</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>1</mn><mn>146,107,962</mn></mfrac></mstyle><mo>≈</mo><mn>6.84</mn><mo>×</mo><msup><mn>10</mn><mrow><mo>−</mo><mn>9</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\tfrac{1}{146{,}107{,}962}\approx 6.84\times10^{-9}</annotation></semantics></math></span> (1 in 146.1 million)</td>
+</tr>
+</tbody></table></div>
+<p><strong>c:</strong> total tickets <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>3,478,761</mn><mo>×</mo><mn>42</mn><mo>=</mo><mn>146,107,962</mn></mrow><annotation encoding="application/x-tex">=3{,}478{,}761\times 42=146{,}107{,}962</annotation></semantics></math></span> — the jackpot is exactly 42× harder than (b).</p>
+<h2 id="p6">Problem 18 — Family meals at home (<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>496</mn></mrow><annotation encoding="application/x-tex">n=496</annotation></semantics></math></span>)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Event</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mn>0</mn><mtext> meals</mtext><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>11</mn><mn>496</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(0\text{ meals})=\tfrac{11}{496}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.0222</mn></mrow><annotation encoding="application/x-tex">0.0222</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>b</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mo>≥</mo><mn>4</mn><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>408</mn><mn>496</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(\ge 4)=\tfrac{408}{496}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.8226</mn></mrow><annotation encoding="application/x-tex">0.8226</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>c</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mo>≤</mo><mn>2</mn><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>52</mn><mn>496</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(\le 2)=\tfrac{52}{496}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1048</mn></mrow><annotation encoding="application/x-tex">0.1048</annotation></semantics></math></span></td>
+</tr>
+</tbody></table></div>
+<p>Check: <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.8226</mn><mo>+</mo><mn>0.1048</mn><mo>+</mo><mi>P</mi><mo stretchy="false">(</mo><mn>3</mn><mo stretchy="false">)</mo><mo>=</mo><mn>0.8226</mn><mo>+</mo><mn>0.1048</mn><mo>+</mo><mn>0.0726</mn><mo>=</mo><mn>1.0000</mn></mrow><annotation encoding="application/x-tex">0.8226+0.1048+P(3)=0.8226+0.1048+0.0726=1.0000</annotation></semantics></math></span> ✔</p>
+<h2 id="p7">Problem 19 — Sports participation</h2>
+<p>Population 248.5 M (male 120.9 M, female 127.6 M).</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Activity</th>
+<th><strong>a.</strong> <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mo>⋅</mo><mo>∣</mo><mtext>female</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\cdot\mid\text{female})</annotation></semantics></math></span></th>
+<th><strong>b.</strong> <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mo>⋅</mo><mo>∣</mo><mtext>male</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P(\cdot\mid\text{male})</annotation></semantics></math></span></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bicycle riding</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1646</mn></mrow><annotation encoding="application/x-tex">0.1646</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1836</mn></mrow><annotation encoding="application/x-tex">0.1836</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>Camping</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1904</mn></mrow><annotation encoding="application/x-tex">0.1904</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.2118</mn></mrow><annotation encoding="application/x-tex">0.2118</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>Exercise walking</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="bold">0.4522</mn></mrow><annotation encoding="application/x-tex">\mathbf{0.4522}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="bold">0.2374</mn></mrow><annotation encoding="application/x-tex">\mathbf{0.2374}</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>Exercising with equipment</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1912</mn></mrow><annotation encoding="application/x-tex">0.1912</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1688</mn></mrow><annotation encoding="application/x-tex">0.1688</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>Swimming</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.2696</mn></mrow><annotation encoding="application/x-tex">0.2696</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.2184</mn></mrow><annotation encoding="application/x-tex">0.2184</annotation></semantics></math></span></td>
+</tr>
+</tbody></table></div>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Quantity</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>c</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>exercise walking</mtext><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>86.4</mn><mn>248.5</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(\text{exercise walking})=\tfrac{86.4}{248.5}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.3477</mn></mrow><annotation encoding="application/x-tex">0.3477</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>d</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>woman</mtext><mo>∣</mo><mtext>walker</mtext><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>57.7</mn><mn>86.4</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(\text{woman}\mid\text{walker})=\tfrac{57.7}{86.4}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.6678</mn></mrow><annotation encoding="application/x-tex">0.6678</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>d</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>man</mtext><mo>∣</mo><mtext>walker</mtext><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>28.7</mn><mn>86.4</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(\text{man}\mid\text{walker})=\tfrac{28.7}{86.4}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.3322</mn></mrow><annotation encoding="application/x-tex">0.3322</annotation></semantics></math></span></td>
+</tr>
+</tbody></table></div>
+<p>⚠ Do not confuse <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>walking</mtext><mo>∣</mo><mi>W</mi><mo stretchy="false">)</mo><mo>=</mo><mn>0.4522</mn></mrow><annotation encoding="application/x-tex">P(\text{walking}\mid W)=0.4522</annotation></semantics></math></span> with <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mi>W</mi><mo>∣</mo><mtext>walking</mtext><mo stretchy="false">)</mo><mo>=</mo><mn>0.6678</mn></mrow><annotation encoding="application/x-tex">P(W\mid\text{walking})=0.6678</annotation></semantics></math></span> — different questions, different denominators.</p>
+<h2 id="p8">Problem 20 — Fortune 500 by state</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Quantity</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mi>N</mi><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>54</mn><mn>500</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(N)=\tfrac{54}{500}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.108</mn></mrow><annotation encoding="application/x-tex">0.108</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>b</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>48</mn><mn>500</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(T)=\tfrac{48}{500}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.096</mn></mrow><annotation encoding="application/x-tex">0.096</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>c</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mi>B</mi><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>217</mn><mn>500</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(B)=\tfrac{217}{500}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.434</mn></mrow><annotation encoding="application/x-tex">0.434</annotation></semantics></math></span></td>
+</tr>
+</tbody></table></div>
+<h2 id="p9">Problem 21 — U.S. adult population by age</h2>
+<p>Total <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>227.6</mn></mrow><annotation encoding="application/x-tex">=227.6</annotation></semantics></math></span> million.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Event</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mn>18</mn><mtext>–</mtext><mn>24</mn><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>29.8</mn><mn>227.6</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(18\text{–}24)=\tfrac{29.8}{227.6}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1309</mn></mrow><annotation encoding="application/x-tex">0.1309</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>b</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mn>18</mn><mtext>–</mtext><mn>34</mn><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>69.8</mn><mn>227.6</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(18\text{–}34)=\tfrac{69.8}{227.6}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.3067</mn></mrow><annotation encoding="application/x-tex">0.3067</annotation></semantics></math></span></td>
+</tr>
+<tr>
+<td>c</td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false">(</mo><mo>≥</mo><mn>45</mn><mo stretchy="false">)</mo><mo>=</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>114.4</mn><mn>227.6</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">P(\ge 45)=\tfrac{114.4}{227.6}</annotation></semantics></math></span></td>
+<td><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.5026</mn></mrow><annotation encoding="application/x-tex">0.5026</annotation></semantics></math></span></td>
+</tr>
+</tbody></table></div>
+<p><strong>c</strong> can also be had as the complement: <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mstyle scriptlevel="0" displaystyle="false"><mfrac><mn>113.2</mn><mn>227.6</mn></mfrac></mstyle><mo>=</mo><mn>1</mn><mo>−</mo><mn>0.4974</mn><mo>=</mo><mn>0.5026</mn></mrow><annotation encoding="application/x-tex">1-\tfrac{113.2}{227.6}=1-0.4974=0.5026</annotation></semantics></math></span> ✔</p>
+
+</div>
+</body>
+</html>

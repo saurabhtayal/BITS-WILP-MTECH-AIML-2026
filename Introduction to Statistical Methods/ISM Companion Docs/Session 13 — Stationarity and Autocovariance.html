@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Statistical Methods · Session 13 — Stationarity and Autocovariance</title>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' }, startup: { typeset: false } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+<style>
+:root{--bg:#070b16;--bg2:#0b1120;--panel:#0e1729;--panel2:#121d36;--line:#1f2d4d;
+  --ink:#e7edf9;--muted:#93a4c8;--dim:#64759c;--cyan:#38f0d8;--cyan2:#19c4ff;
+  --violet:#9b8cff;--pink:#ff6ec7;--amber:#ffcb6b;--green:#62e88a;--red:#ff6b81;
+  --glow:0 0 18px rgba(56,240,216,.45);--r:16px;
+  --mono:'SFMono-Regular',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -5%, rgba(25,196,255,.10), transparent 55%),
+    radial-gradient(1000px 500px at 0% 10%, rgba(155,140,255,.10), transparent 55%),var(--bg);
+  color:var(--ink);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.65;font-size:16px;overflow-wrap:anywhere;word-break:break-word;}
+html,body{overflow-x:clip}
+a{color:var(--cyan2);text-decoration:none}
+.shell{display:grid;grid-template-columns:300px 1fr;max-width:1500px;margin:0 auto}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 16px 60px;border-right:1px solid var(--line);background:linear-gradient(180deg,var(--bg2),transparent)}
+.brand{font-weight:800;letter-spacing:.3px;font-size:15px;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--cyan);box-shadow:var(--glow)}
+.brand small{display:block;color:var(--dim);font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+.toc{margin-top:18px;display:flex;flex-direction:column;gap:1px}
+.toc a{color:var(--muted);font-size:13.5px;padding:7px 12px;border-radius:9px;display:flex;gap:9px;align-items:center;border:1px solid transparent;transition:.15s}
+.toc a .n{font-family:var(--mono);font-size:11px;color:var(--dim);min-width:20px}
+.toc a:hover{background:var(--panel);color:var(--ink)}
+.toc a.active{background:linear-gradient(90deg,rgba(56,240,216,.16),rgba(56,240,216,.02));color:#fff;border-color:rgba(56,240,216,.35)}
+.toc a.active .n{color:var(--cyan)}
+.toc .grp{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:14px 12px 5px;font-weight:700}
+main{padding:0 0 120px}
+.progress{position:fixed;top:0;left:300px;right:0;height:3px;background:transparent;z-index:50}
+.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));box-shadow:var(--glow)}
+section{padding:62px 54px;border-bottom:1px solid var(--line);scroll-margin-top:10px}
+section:nth-child(even){background:linear-gradient(180deg,rgba(255,255,255,.012),transparent)}
+.wrap{max-width:920px;margin:0 auto}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:26px;height:2px;background:var(--cyan);display:inline-block;border-radius:2px}
+h1{font-size:clamp(30px,5vw,50px);line-height:1.08;margin:.35em 0 .2em;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(24px,3.4vw,34px);margin:.25em 0 .5em;font-weight:800;letter-spacing:-.01em;color:#fff}
+h3{font-size:19px;margin:1.6em 0 .5em;color:#fff;font-weight:700}
+h4{font-size:15px;margin:1.2em 0 .4em;color:var(--cyan);font-weight:700;letter-spacing:.02em}
+p{color:var(--ink)}.lead{font-size:18.5px;color:var(--muted)}.muted{color:var(--muted)}strong{color:#fff}
+code{font-family:var(--mono);background:var(--panel2);padding:.12em .42em;border-radius:6px;font-size:.88em;color:var(--cyan);overflow-wrap:anywhere}
+ul.muted li{margin:4px 0}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin:22px 0}
+.lab{background:linear-gradient(180deg,#0c1830,#0a1322);border:1px solid rgba(56,240,216,.28);border-radius:var(--r);padding:22px 24px;margin:26px 0;position:relative;overflow:hidden}
+.lab::before{content:"\26A1 INTERACTIVE";position:absolute;top:0;right:0;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:#06241f;background:var(--cyan);padding:4px 12px;border-bottom-left-radius:10px;font-weight:800}
+.note{border-left:3px solid var(--violet);background:rgba(155,140,255,.07);padding:12px 18px;border-radius:0 10px 10px 0;margin:18px 0;color:var(--muted)}
+.note b,.note strong{color:#cdc4ff}
+.key{border-left:3px solid var(--amber);background:rgba(255,203,107,.07);padding:12px 18px;border-radius:0 10px 10px 0;margin:18px 0}
+.key b{color:var(--amber)}
+.warnb{border-left:3px solid var(--red);background:rgba(255,107,129,.07);padding:12px 18px;border-radius:0 10px 10px 0;margin:18px 0}
+.warnb b{color:var(--red)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:880px){.grid2,.grid3{grid-template-columns:1fr}}
+.ctrl{display:flex;align-items:center;gap:12px;margin:10px 0;font-size:14px;flex-wrap:wrap}
+.ctrl label{min-width:120px;font-family:var(--mono);color:var(--muted)}
+input[type=range]{-webkit-appearance:none;appearance:none;height:5px;border-radius:4px;background:var(--line);flex:1;min-width:120px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--cyan);box-shadow:var(--glow);cursor:pointer;border:2px solid #06241f}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--cyan);cursor:pointer;border:2px solid #06241f}
+.val{font-family:var(--mono);color:var(--cyan);min-width:84px;text-align:right;font-size:13.5px}
+button.btn{font-family:var(--mono);background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:8px 14px;border-radius:9px;cursor:pointer;font-size:13px;transition:.15s}
+button.btn:hover{border-color:var(--cyan);color:#fff}
+button.btn.active{background:var(--cyan);color:#06241f;border-color:var(--cyan);font-weight:700}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:center}
+table.tt{border-collapse:collapse;font-family:var(--mono);font-size:13px;margin:8px 0;width:100%}
+table.tt th,table.tt td{border:1px solid var(--line);padding:7px 10px;text-align:left;word-break:break-word}
+table.tt th{background:var(--panel2);color:var(--muted)}
+.tablewrap{overflow-x:auto;margin:16px 0}
+.readout{font-family:var(--mono);font-size:13.5px;background:#06101f;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:14px;white-space:pre-wrap;color:var(--cyan);overflow-x:auto}
+.readout .hl{color:var(--amber)}.readout .g{color:var(--green)}.readout .r{color:var(--red)}
+canvas{display:block;max-width:100%}
+.eqbox{background:#06101f;border:1px solid var(--line);border-radius:12px;padding:6px 18px;margin:16px 0;overflow-x:auto;color:#e7edf9}
+mjx-container[display="true"]{overflow-x:auto;max-width:100%}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:20px;border:1px solid var(--line);color:var(--muted);margin:2px 4px 2px 0}
+.inp{font-family:var(--mono);background:#06101f;border:1px solid var(--line);color:var(--ink);padding:7px 10px;border-radius:8px;font-size:13px;width:100%}
+.foot{max-width:920px;margin:40px auto 0;color:var(--dim);font-size:13px;padding:0 54px}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease, transform .65s cubic-bezier(.2,.8,.3,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.reveal{opacity:1 !important;transform:none !important;transition:none}}
+body{transition:background .35s ease,color .35s ease}
+.topctl{position:fixed;top:14px;right:18px;z-index:60;display:flex;gap:9px}
+.topbtn{font-family:var(--mono);font-size:12.5px;background:rgba(18,29,54,.82);border:1px solid var(--line);color:var(--ink);padding:9px 14px;border-radius:30px;cursor:pointer;display:flex;align-items:center;gap:7px;backdrop-filter:blur(8px);transition:.18s}
+.topbtn:hover{border-color:var(--cyan);color:#fff}
+.topbtn.primary{background:linear-gradient(90deg,var(--violet),var(--cyan));color:#06241f;border:none;font-weight:700}
+.spot{position:fixed;z-index:71;border:2px solid var(--cyan);border-radius:16px;box-shadow:0 0 0 9999px rgba(2,5,12,.66), 0 0 28px rgba(56,240,216,.55);transition:all .5s cubic-bezier(.3,.9,.3,1);pointer-events:none}
+.storycard{position:fixed;z-index:73;left:50%;bottom:28px;transform:translateX(-50%);width:min(640px,92vw);background:linear-gradient(180deg,#0f1b33,#0a1322);border:1px solid rgba(56,240,216,.42);border-radius:18px;padding:20px 24px;box-shadow:0 22px 64px rgba(0,0,0,.55);color:#e7edf9}
+.storycard .stp{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}
+.storycard h3{margin:6px 0 6px;color:#fff;font-size:21px}
+.storycard p{color:#aebbd6;font-size:14.5px;margin:0;line-height:1.6}
+.storynav{display:flex;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap}.storynav .sp{flex:1}
+.storydots{display:flex;gap:5px;flex-wrap:wrap;max-width:260px}
+.storydots i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:.2s;cursor:pointer}
+.storydots i.on{background:var(--cyan);transform:scale(1.35)}
+[data-theme="light"] body{background:radial-gradient(1200px 600px at 82% -5%, rgba(25,196,255,.10), transparent 55%),radial-gradient(1000px 500px at 0% 8%, rgba(155,140,255,.13), transparent 55%),#eef2f8;color:#16223d;}
+[data-theme="light"] h1,[data-theme="light"] h2{color:#0d1730}[data-theme="light"] h3{color:#16223d}[data-theme="light"] h4{color:#0a8198}
+[data-theme="light"] p{color:#28364f}[data-theme="light"] .lead{color:#46566f}[data-theme="light"] .muted{color:#586a8a}
+[data-theme="light"] strong{color:#0a1326}[data-theme="light"] .kicker{color:#0a8198}[data-theme="light"] .kicker::before{background:#0a8198}
+[data-theme="light"] a{color:#0a72b8}[data-theme="light"] section{border-bottom-color:#dde4f0}
+[data-theme="light"] .card{background:linear-gradient(180deg,#ffffff,#f5f8fe);border-color:#dde4f0}
+[data-theme="light"] .card h4{color:#0a8198}[data-theme="light"] .card .muted,[data-theme="light"] .card p{color:#43516e}
+[data-theme="light"] .note{background:rgba(124,108,255,.09);color:#3a3357}[data-theme="light"] .note b,[data-theme="light"] .note strong{color:#4b3bb0}
+[data-theme="light"] .key{background:rgba(214,158,46,.11)}[data-theme="light"] .key b{color:#946708}
+[data-theme="light"] .warnb{background:rgba(214,46,46,.08)}[data-theme="light"] .warnb b{color:#b3271e}
+[data-theme="light"] .sidebar{background:linear-gradient(180deg,#ffffff,transparent);border-right-color:#dde4f0}
+[data-theme="light"] .brand{color:#0d1730}[data-theme="light"] .toc a{color:#46566f}
+[data-theme="light"] .toc a:hover{background:#eef2fb;color:#0d1730}
+[data-theme="light"] .toc a.active{background:linear-gradient(90deg,rgba(10,129,152,.14),transparent);color:#0a4a57;border-color:rgba(10,129,152,.4)}
+[data-theme="light"] .toc a.active .n{color:#0a8198}[data-theme="light"] .toc .grp{color:#8693b0}
+[data-theme="light"] table.tt th{background:#eef2f9;color:#46566f}[data-theme="light"] table.tt td{color:#16223d;border-color:#d8e0ee}
+[data-theme="light"] .foot{color:#7a89a8}[data-theme="light"] .tag{color:#43516e;border-color:#d2dcec}
+[data-theme="light"] .topbtn{background:rgba(255,255,255,.9);border-color:#dde4f0;color:#16223d}
+[data-theme="light"] .lab h4{color:#0a8198}[data-theme="light"] .lab p,[data-theme="light"] .lab .muted{color:#46566f}
+[data-theme="light"] .lab strong,[data-theme="light"] .lab b{color:#0a1326}
+[data-theme="light"] .inp{background:#fff;border-color:#d8e0ee;color:#16223d}
+/* MOBILE-RESPONSIVE v2 */
+/* prevent a fixed-width canvas/table from blowing out the grid track on any width */
+.shell>*{min-width:0}
+main,.wrap,.hero-net,.lab,.card{min-width:0}
+.hero-net{overflow:hidden}
+img,canvas,svg{max-width:100%}
+@media (max-width:820px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{position:sticky;top:0;z-index:45;height:auto;max-height:none;overflow:visible;
+    padding:11px 14px 9px;border-right:none;border-bottom:1px solid var(--line);
+    background:rgba(11,17,32,.94);backdrop-filter:blur(10px)}
+  .brand{margin-bottom:0}
+  .toc{flex-direction:row;overflow-x:auto;gap:6px;margin-top:9px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .toc .grp{display:none}
+  .toc a{white-space:nowrap;flex:0 0 auto;font-size:12.5px;padding:6px 11px;border:1px solid var(--line)}
+  .toc a .n{display:none}
+  .progress{left:0}
+  main{padding:0 0 90px}
+  section{padding:38px 18px}
+  .wrap,.foot{max-width:100%}
+  .foot{padding:0 18px}
+  .lead{font-size:16px}
+  h3{font-size:18px}
+  .card,.lab,.note,.key,.warnb{padding:15px 15px}
+  .lab{padding-top:30px}
+  .grid3{gap:12px}
+  .topctl{top:auto;bottom:14px;right:12px}
+  .topbtn{font-size:12px;padding:8px 12px}
+  .readout,.tablewrap{font-size:12.5px}
+}
+@media (max-width:480px){
+  section{padding:30px 14px}
+  .foot{padding:0 14px}
+  .topbtn{padding:7px 10px}
+}
+@media (max-width:820px){[data-theme="light"] .sidebar{background:rgba(255,255,255,.95)}}
+</style>
+<style>
+@media (max-width:600px){
+  #backBtn .btxt,#homeBtn .btxt{display:none}
+  #backBtn,#homeBtn{padding:8px 11px}
+}
+</style>
+<style id="morning-theme">
+[data-theme="light"] body{background:
+  radial-gradient(1000px 560px at 10% -6%, rgba(255,178,110,.30), transparent 60%),
+  radial-gradient(940px 540px at 94% -2%, rgba(120,190,255,.26), transparent 60%),
+  radial-gradient(860px 660px at 50% 116%, rgba(255,140,180,.15), transparent 62%),
+  linear-gradient(180deg,#fffaf5,#fdf4ff) !important;color:#2b2540}
+[data-theme="light"] .sidebar{background:linear-gradient(180deg,rgba(255,244,236,.7),transparent) !important}
+</style>
+<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#fff9f4"><link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Lecture Library">
+</head>
+<body>
+<script>(function(){try{var t=localStorage.getItem('lectheme_m');if(t!=='dark')document.documentElement.setAttribute('data-theme','light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
+<div class="progress"><i id="progbar"></i></div>
+<div class="topctl">
+  <button class="topbtn" id="navToggle" title="Show / hide the menu" aria-pressed="false">&#9776;<span class="btxt">&nbsp;Menu</span></button>
+  <a class="topbtn" id="backBtn" href="../index.html" onclick="if(history.length&gt;1){history.back();return false;}" title="Back to the library">&#8592;&nbsp; <span class="btxt">Back</span></a>
+  <a class="topbtn" id="homeBtn" href="../index.html" onclick="try{sessionStorage.removeItem('ll_return_subject')}catch(e){}" title="All subjects">&#8962;&nbsp;<span class="btxt">Home</span></a>
+  <button class="topbtn primary" id="tourBtn">&#9654;<span class="btxt"> Guided tour</span></button>
+  <button class="topbtn" id="themeBtn">&#9728; Light</button>
+</div>
+<div class="spot" id="storyspot" style="display:none"></div>
+<div class="storycard" id="storycard" style="display:none">
+  <div class="stp" id="storyStep"></div><h3 id="storyTitle"></h3><p id="storyText"></p>
+  <div class="storynav"><div class="storydots" id="storyDots"></div><div class="sp"></div>
+    <button class="btn" id="storyPrev">&#9664; prev</button><button class="btn" id="storyPlay">&#9208; pause</button>
+    <button class="btn" id="storyNext">next &#9654;</button><button class="btn" id="storyExit">&#10005; exit</button></div>
+</div>
+
+<div class="shell"><aside class="sidebar">
+  <div class="brand"><span class="dot"></span><div>ISM · S13<small>Stationarity</small></div></div>
+  <nav class="toc" id="toc">
+    <a href="#intro"><span class="n">00</span> Overview</a>
+    <div class="grp">Stationarity</div>
+    <a href="#stat"><span class="n">01</span> Stationarity</a>
+    <a href="#gamma"><span class="n">02</span> Autocovariance</a>
+    <div class="grp">Series</div>
+    <a href="#wnrw"><span class="n">03</span> White noise & RW</a>
+    <div class="grp">Practice</div>
+    <a href="#practice"><span class="n">QA</span> Practice questions</a>
+    <div class="grp">Go deeper</div>
+    <a href="#godeeper"><span class="n">&#8599;</span> External resources</a>
+    <div class="grp">Wrap up</div>
+    <a href="#summary"><span class="n">04</span> Key takeaways</a>
+  </nav>
+</aside>
+<main>
+
+<section id="intro"><div class="wrap">
+ <div class="kicker">Interactive Edition · Session 13</div>
+ <h1>Stationarity &amp;<br>Autocovariance</h1>
+ <p class="lead">Forecasting assumes the series' behaviour <strong>doesn't change over time</strong> — a stationary series. Here's stationarity, autocovariance, white noise vs random walk, and differencing.</p>
+ <div class="hero-net"><canvas id="heroCanvas" width="900" height="220" style="width:100%;height:auto"></canvas></div>
+ <div class="grid3">
+  <div class="card"><h4>What you'll learn</h4><p class="muted" style="font-size:14px">Weak stationarity, autocovariance γ(h) & autocorrelation ρ(h), white noise, random walk, and differencing.</p></div>
+  <div class="card"><h4>How to use it</h4><p class="muted" style="font-size:14px">Compare a stationary series with a wandering random walk.</p></div>
+  <div class="card"><h4>The one idea</h4><p class="muted" style="font-size:14px">If the rules stay the same over time, you can forecast.</p></div>
+ </div></div></section>
+
+<section id="stat"><div class="wrap">
+ <div class="kicker">01 · Stationarity</div><h2>What stationary means</h2>
+ <p class="lead">Weak stationarity: <strong>constant mean, constant variance</strong>, and autocovariance that depends only on the <strong>lag</strong> — not on absolute time.</p>
+ <div class="lab">
+  <h4 style="margin-top:4px">&#9889; Stationary vs random walk</h4>
+  <p class="muted" style="font-size:14px">Watch white noise stay put while a random walk wanders and its spread grows.</p>
+  <div class="chips"><button class="btn" id="stStep">new sample &#9654;</button></div>
+  <canvas id="stCanvas" width="860" height="220" style="width:100%;height:auto"></canvas>
+  <div class="readout" id="stOut"></div>
+ </div>
+ <div class="key"><b>Fair die vs drifting die.</b> Stationary = same odds every throw; non-stationary = the bias drifts, so yesterday's lesson no longer applies.</div>
+ <p class="muted"><b>Bridge →</b> Measuring the dependence.</p>
+</div></section>
+
+<section id="gamma"><div class="wrap">
+ <div class="kicker">02 · Autocovariance</div><h2>γ(h) and ρ(h)</h2>
+ <p class="lead"><strong>γ(h) = Cov(xₜ, xₜ₊ₕ)</strong>, with γ(0) = variance. <strong>ρ(h) = γ(h)/γ(0)</strong>, ρ(0)=1, in [−1,1]. For a stationary series these depend only on h.</p>
+ <p class="muted"><b>Bridge →</b> Two canonical series.</p>
+</div></section>
+
+<section id="wnrw"><div class="wrap">
+ <div class="kicker">03 · Two series</div><h2>White noise &amp; random walk</h2>
+ <div class="grid2">
+  <div class="card"><h4>White noise</h4><p class="muted" style="font-size:14px">Zero mean, constant variance, <b>no autocorrelation</b> — the ideal residual a good model leaves behind. Stationary.</p></div>
+  <div class="card"><h4>Random walk</h4><p class="muted" style="font-size:14px">xₜ = xₜ₋₁ + εₜ; variance grows with time, wanders from any fixed mean. <b>Non-stationary</b>.</p></div>
+ </div>
+ <div class="key"><b>Differencing.</b> Replace xₜ by xₜ − xₜ₋₁ to remove a trend (a random walk differenced once becomes white noise). Seasonal differencing xₜ − xₜ₋ₛ removes seasonality.</div>
+ <p class="muted"><b>Bridge →</b> Pull it together.</p>
+</div></section>
+
+<section id="practice">
+ <div class="wrap practice-wrap">
+  
+<style>
+.practice-wrap .qa{border:1px solid var(--line);border-radius:14px;margin:14px 0;background:var(--panel);overflow:hidden;transition:border-color .2s}
+.practice-wrap .qa[open]{border-color:var(--cyan)}
+.practice-wrap .qa>summary{cursor:pointer;padding:15px 18px;font-weight:600;color:var(--ink);list-style:none;display:flex;align-items:flex-start;gap:12px;line-height:1.5}
+.practice-wrap .qa>summary::-webkit-details-marker{display:none}
+.practice-wrap .qa>summary::after{content:'reveal \25B8';margin-left:auto;color:var(--muted);font-size:12px;font-weight:600;white-space:nowrap;letter-spacing:.04em}
+.practice-wrap .qa[open]>summary::after{content:'hide \25BE'}
+.practice-wrap .qa[open]>summary{border-bottom:1px solid var(--line);background:rgba(56,240,216,.05)}
+.practice-wrap .qnum{flex:none;font-family:var(--mono);font-size:12px;font-weight:700;color:#0b1020;background:var(--cyan);border-radius:7px;padding:3px 8px}
+.practice-wrap .qsrc{display:block;margin-top:6px;color:var(--muted);font-size:12px;font-weight:500}
+.practice-wrap .qa-body{padding:14px 18px 18px;color:var(--ink);font-size:15px;line-height:1.62}
+.practice-wrap .qa-body .ans{color:var(--green);font-weight:700}
+.practice-wrap .qa-body ul{margin:8px 0}
+.practice-wrap .qa-body .step{font-family:var(--mono);font-size:13.5px;background:rgba(147,164,200,.08);border-left:2px solid var(--cyan);padding:8px 12px;margin:8px 0;border-radius:0 8px 8px 0;overflow-x:auto}
+</style>
+<div class="kicker">Practice &middot; Exam-style Q&amp;A</div><h2>Practice questions</h2><p class="lead">Exam-style questions on stationarity and autocovariance.</p><details class="qa"><summary><span class="qnum">Q1</span><div>State the conditions for (weak) stationarity.<span class="qsrc">Session 13 · conceptual</span></div></summary><div class="qa-body"><span class='ans'>Constant mean, constant variance, and an autocovariance that depends only on the lag h</span> (not on absolute time).</div></details><details class="qa"><summary><span class="qnum">Q2</span><div>Define autocovariance γ(h) and autocorrelation ρ(h).<span class="qsrc">Session 13 · conceptual</span></div></summary><div class="qa-body">γ(h) = <span class='ans'>Cov(xₜ, xₜ₊ₕ)</span> (γ(0) is the variance); ρ(h) = <span class='ans'>γ(h)/γ(0)</span>, with ρ(0)=1 and −1 ≤ ρ(h) ≤ 1.</div></details><details class="qa"><summary><span class="qnum">Q3</span><div>What is white noise, and is it stationary?<span class="qsrc">Session 13 · conceptual</span></div></summary><div class="qa-body">Zero mean, constant variance, and <span class='ans'>no autocorrelation</span> (γ(h)=0 for h≠0). It is <span class='ans'>stationary</span> — the ideal residual a good model leaves behind.</div></details><details class="qa"><summary><span class="qnum">Q4</span><div>Why is a random walk xₜ = xₜ₋₁ + εₜ non-stationary?<span class="qsrc">Session 13 · conceptual</span></div></summary><div class="qa-body">Its <span class='ans'>variance grows with time</span> and it wanders without returning to a fixed mean, so the statistical behaviour changes over time.</div></details><details class="qa"><summary><span class="qnum">Q5</span><div>How does differencing help, and what does it do to a random walk?<span class="qsrc">Session 13 · numeric</span></div></summary><div class="qa-body">Differencing replaces xₜ with <span class='ans'>xₜ − xₜ₋₁</span>, removing a linear trend. A random walk differenced once becomes <span class='ans'>white noise</span> (stationary).</div></details>
+ </div>
+</section>
+
+<style>
+.golist{display:flex;flex-direction:column;gap:12px;margin:18px 0}
+.gores{display:block;border:1px solid var(--line);border-radius:13px;padding:14px 17px;
+  background:linear-gradient(180deg,var(--panel),var(--bg2));transition:.16s;text-decoration:none}
+.gores:hover{border-color:var(--cyan);transform:translateY(-1px)}
+.gores .gotop{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.gores .gokind{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  padding:2px 9px;border-radius:20px;border:1px solid var(--line);color:var(--muted);flex:none}
+.gores .golabel{font-weight:700;color:var(--ink);font-size:15px;line-height:1.4}
+.gores:hover .golabel{color:var(--cyan)}
+.gores .gosrc{font-size:12px;color:var(--dim);font-family:var(--mono);display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.gores .golic{font-size:10.5px;padding:1px 8px;border-radius:20px;border:1px solid rgba(98,232,138,.35);
+  color:var(--green);background:rgba(98,232,138,.07);font-family:var(--mono)}
+[data-theme="light"] .gores .golic{color:#1a7f45;border-color:rgba(26,127,69,.3);background:rgba(26,127,69,.07)}
+.gores .gonote{color:var(--muted);font-size:13.5px;margin-top:6px;line-height:1.55}
+.gores .goext{color:var(--dim);font-size:11px;font-family:var(--mono);margin-left:auto;flex:none}
+[data-theme="light"] .gores{background:linear-gradient(180deg,#fff,#f5f8fe);border-color:#dde4f0}
+[data-theme="light"] .gores .golabel{color:#0d1730}
+[data-theme="light"] .gores .gonote{color:#46566f}
+@media(max-width:600px){.gores .goext{display:none}}
+</style>
+
+<section id="godeeper"><div class="wrap">
+ <div class="kicker">&#8599; Go deeper</div>
+ <h2>Learn this properly</h2>
+ <p class="lead">This companion is deliberately short. When a topic hasn't clicked, these are the sources worth your time &mdash; all free and from the original authors.</p>
+ <div class="golist">
+        <a class="gores" href="https://www.openintro.org/book/os/" target="_blank" rel="noopener noreferrer">
+          <div class="gotop"><span class="gokind">&#128214;&nbsp;book</span><span class="golabel">OpenIntro Statistics</span><span class="goext">open &#8599;</span></div>
+          <div class="gosrc">OpenIntro<span class="golic">Free PDF (pay-what-you-want)</span></div>
+          <div class="gonote">A clear first course in statistics — distributions, inference, regression.</div>
+        </a>
+        <a class="gores" href="https://seeing-theory.brown.edu/" target="_blank" rel="noopener noreferrer">
+          <div class="gotop"><span class="gokind">&#127891;&nbsp;course</span><span class="golabel">Seeing Theory</span><span class="goext">open &#8599;</span></div>
+          <div class="gosrc">Brown University<span class="golic">Free &amp; interactive</span></div>
+          <div class="gonote">Probability and statistics explained with interactive visualisations.</div>
+        </a>
+        <a class="gores" href="https://statquest.org/video-index/" target="_blank" rel="noopener noreferrer">
+          <div class="gotop"><span class="gokind">&#9654;&nbsp;video</span><span class="golabel">StatQuest</span><span class="goext">open &#8599;</span></div>
+          <div class="gosrc">Josh Starmer<span class="golic">Free on YouTube</span></div>
+          <div class="gonote">Short, wonderfully clear videos that build intuition step by step.</div>
+        </a>
+ </div>
+ <p class="muted" style="font-size:13px">External links open in a new tab. Nothing here is hosted on this site &mdash; each link goes to the author or publisher&rsquo;s own copy.</p>
+</div></section>
+<section id="summary"><div class="wrap">
+ <div class="kicker">04 · Tying it together</div><h2>Key takeaways</h2>
+ <div class="grid3">
+  <div class="card"><h4>1 · Stationary</h4><p class="muted" style="font-size:14px">Constant mean/variance; γ depends only on lag.</p></div>
+  <div class="card"><h4>2 · γ(h), ρ(h)</h4><p class="muted" style="font-size:14px">Autocovariance and autocorrelation; ρ(0)=1.</p></div>
+  <div class="card"><h4>3 · Fixes</h4><p class="muted" style="font-size:14px">White noise vs random walk; difference to make stationary.</p></div>
+ </div>
+ <div class="note" style="margin-top:22px"><b>The thread.</b> Stationary series have constant mean and variance and an autocovariance that depends only on the lag — the condition that makes forecasting possible. White noise is the stationary ideal; a random walk is non-stationary with growing variance; differencing removes trends to restore stationarity.</div>
+ <div class="chips" style="margin-top:18px"><span class="tag">stationarity</span><span class="tag">autocovariance γ(h)</span><span class="tag">autocorrelation ρ(h)</span><span class="tag">white noise</span><span class="tag">random walk</span><span class="tag">differencing</span></div>
+</div></section>
+
+</main>
+</div>
+<script>
+
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const fmt=(x,d=2)=>{if(Math.abs(x)<1e-9)x=0;return x.toFixed(d);};
+function makeSlider(host,opt,onInput){
+  const row=document.createElement('div');row.className='ctrl';
+  const lab=document.createElement('label');lab.innerHTML=opt.label;
+  const inp=document.createElement('input');inp.type='range';inp.id=opt.id;inp.min=opt.min;inp.max=opt.max;inp.step=opt.step;inp.value=opt.value;
+  const val=document.createElement('span');val.className='val';
+  const dec=(opt.step+'').includes('.')?(opt.step+'').split('.')[1].length:0;
+  const show=()=>{val.textContent=(opt.fmt?opt.fmt(parseFloat(inp.value)):parseFloat(inp.value).toFixed(dec));};
+  inp.addEventListener('input',()=>{show();if(onInput)onInput(parseFloat(inp.value));});
+  row.appendChild(lab);row.appendChild(inp);row.appendChild(val);host.appendChild(row);show();
+  return ()=>parseFloat(inp.value);
+}
+function setupCanvas(canvas,drawFn){
+  const ctx=canvas.getContext('2d');
+  function resize(){const dpr=Math.max(1,window.devicePixelRatio||1);const rect=canvas.getBoundingClientRect();
+    const cssW=rect.width||canvas.width, cssH=cssW*(canvas.height/canvas.width);
+    canvas.style.height=cssH+'px';canvas.width=Math.round(cssW*dpr);canvas.height=Math.round(cssH*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);drawFn(ctx,cssW,cssH);}
+  let raf=null;window.addEventListener('resize',()=>{if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(resize);});
+  resize();return {redraw:()=>{const dpr=Math.max(1,window.devicePixelRatio||1);drawFn(ctx,canvas.width/dpr,canvas.height/dpr);}};
+}
+const tocLinks=$$('#toc a');const sections=tocLinks.map(a=>$(a.getAttribute('href')));
+function onScroll(){const st=window.scrollY, h=document.body.scrollHeight-window.innerHeight;
+  $('#progbar').style.width=(100*st/(h||1))+'%';let idx=0;sections.forEach((sec,i)=>{if(sec && sec.offsetTop-130<=st) idx=i;});
+  tocLinks.forEach((a,i)=>a.classList.toggle('active',i===idx));}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.__demos=[];function runDemos(){window.__demos.forEach(f=>{try{f();}catch(e){console.error(e);}});}
+function initTheme(){const btn=$('#themeBtn'); if(!btn)return;
+  const sync=()=>{const light=document.documentElement.getAttribute('data-theme')==='light';btn.innerHTML=light?'\u{1F319} Dark':'☀ Light';};sync();
+  btn.addEventListener('click',()=>{const root=document.documentElement, light=root.getAttribute('data-theme')==='light';
+    if(light){root.removeAttribute('data-theme');try{localStorage.setItem('lectheme_m','dark');}catch(e){}}
+    else{root.setAttribute('data-theme','light');try{localStorage.setItem('lectheme_m','light');}catch(e){}}sync();runDemos();});}
+function initReveal(){if(!('IntersectionObserver' in window))return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),
+    {threshold:0.04,rootMargin:'0px 0px -4% 0px'});
+  $$('section .wrap > *').forEach(el=>{if(el.classList.contains('lab')||el.querySelector('canvas'))return;el.classList.add('reveal');io.observe(el);});}
+const STORY=[
+ {id:'intro',t:'Welcome',x:'Stationary series keep constant behaviour over time, which is what makes forecasting possible.'},
+ {id:'stat',t:'Stationarity',x:'Weak stationarity: constant mean, constant variance, autocovariance depends only on the lag.'},
+ {id:'gamma',t:'Autocovariance',x:'gamma(h)=Cov(x_t,x_{t+h}); gamma(0)=variance. rho(h)=gamma(h)/gamma(0), rho(0)=1.'},
+ {id:'wnrw',t:'White noise & RW',x:'White noise: no autocorrelation, stationary. Random walk x_t=x_{t-1}+e: variance grows, non-stationary. Difference to fix.'},
+ {id:'summary',t:'Key takeaways',x:'Stationary = constant behaviour; gamma/rho depend on lag; white noise vs random walk; difference to make stationary.'}
+];
+let storyI=0,storyPlaying=false,storyTimer=null,storyActive=false;
+function storySec(){return $('#'+STORY[storyI].id);}
+function positionSpot(){const sec=storySec();if(!sec)return;const el=sec.querySelector('h1,h2')||sec;
+  const r=el.getBoundingClientRect(),sp=$('#storyspot');sp.style.display='block';
+  sp.style.left=(r.left-12)+'px';sp.style.top=(r.top-10)+'px';sp.style.width=(r.width+24)+'px';sp.style.height=(r.height+20)+'px';}
+function showStory(){const s=STORY[storyI];$('#storyStep').textContent='Step '+(storyI+1)+' / '+STORY.length;$('#storyTitle').textContent=s.t;$('#storyText').innerHTML=s.x;
+  $$('#storyDots i').forEach((d,i)=>d.classList.toggle('on',i===storyI));
+  const sec=storySec();if(sec){const y=sec.getBoundingClientRect().top+window.scrollY-86;window.scrollTo({top:y,behavior:'smooth'});}setTimeout(positionSpot,520);}
+function resetTimer(){clearInterval(storyTimer);if(storyPlaying)storyTimer=setInterval(()=>{if(storyI===STORY.length-1){togglePlay();}else nextStory();},9000);}
+function nextStory(){storyI=(storyI+1)%STORY.length;showStory();resetTimer();}
+function prevStory(){storyI=(storyI-1+STORY.length)%STORY.length;showStory();resetTimer();}
+function togglePlay(){storyPlaying=!storyPlaying;$('#storyPlay').innerHTML=storyPlaying?'⏸ pause':'▶ play';resetTimer();}
+function spotFollow(){if(storyActive)positionSpot();}
+function startStory(){storyActive=true;storyI=0;storyPlaying=true;$('#storycard').style.display='block';$('#storyPlay').innerHTML='⏸ pause';
+  $('#storyDots').innerHTML=STORY.map((_,i)=>'<i data-i="'+i+'"></i>').join('');
+  $$('#storyDots i').forEach(d=>d.addEventListener('click',()=>{storyI=+d.dataset.i;showStory();resetTimer();}));
+  showStory();resetTimer();window.addEventListener('scroll',spotFollow,{passive:true});window.addEventListener('resize',positionSpot);}
+function endStory(){storyActive=false;storyPlaying=false;clearInterval(storyTimer);$('#storycard').style.display='none';$('#storyspot').style.display='none';
+  window.removeEventListener('scroll',spotFollow);window.removeEventListener('resize',positionSpot);}
+function initStory(){if(!$('#tourBtn'))return;$('#tourBtn').addEventListener('click',startStory);$('#storyExit').addEventListener('click',endStory);
+  $('#storyNext').addEventListener('click',nextStory);$('#storyPrev').addEventListener('click',prevStory);$('#storyPlay').addEventListener('click',togglePlay);
+  document.addEventListener('keydown',e=>{if(!storyActive)return;if(e.key==='Escape')endStory();else if(e.key==='ArrowRight')nextStory();else if(e.key==='ArrowLeft')prevStory();else if(e.key===' '){e.preventDefault();togglePlay();}});}
+
+/* ===== DEMOS ===== */
+
+const SC={ink:'#e7edf9',mut:'#93a4c8',line:'rgba(120,150,210,.3)',blu:'#19c4ff',pur:'#9b8cff',
+  amb:'#ffcb6b',grn:'#62e88a',red:'#ff6b81',rose:'#fb7185'};
+function wrapT(ctx,tx,x,y,mw,lh){const ws=tx.split(' ');let l='',yy=y;ws.forEach(w=>{const t=l+w+' ';
+  if(ctx.measureText(t).width>mw){ctx.fillText(l,x,yy);l=w+' ';yy+=lh;}else l=t;});ctx.fillText(l,x,yy);return yy;}
+function heroDemo(labels,hub){window.__demos.push(function(){const c=$('#heroCanvas');if(!c)return;let t=0;
+  const cv=setupCanvas(c,function(ctx,W,H){ctx.clearRect(0,0,W,H);
+    const cx=W*0.74,cy=H*0.5;labels.forEach((L,i)=>{const y=H*(0.26+i*0.48/Math.max(1,labels.length-1));
+      const pulse=(Math.sin(t*0.05+i)*0.5+0.5);
+      ctx.strokeStyle='rgba(120,150,210,'+(0.25+pulse*0.4)+')';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(W*0.16+150,y);ctx.lineTo(cx-46,cy);ctx.stroke();
+      ctx.fillStyle='#0e2138';ctx.strokeStyle=[SC.blu,SC.pur,SC.amb,SC.grn][i%4];ctx.lineWidth=2;
+      ctx.beginPath();ctx.roundRect(W*0.16-2,y-18,150,36,9);ctx.fill();ctx.stroke();
+      ctx.fillStyle=SC.ink;ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText(L,W*0.16+73,y+4);});
+    ctx.fillStyle='#0a2a3a';ctx.strokeStyle=SC.rose;ctx.lineWidth=2.5;ctx.shadowColor=SC.rose;ctx.shadowBlur=16;
+    ctx.beginPath();ctx.arc(cx,cy,48,0,7);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle=SC.rose;ctx.font='bold 14px sans-serif';ctx.fillText(hub,cx,cy+5);ctx.textAlign='left';});
+  function loop(){t++;cv.redraw();requestAnimationFrame(loop);}loop();});}
+function cycleDemo(canvasId,btnId,resetId,outId,phases){window.__demos.push(function(){
+  const c=$(canvasId),out=$(outId);if(!c)return;let i=0;
+  const cv=setupCanvas(c,function(ctx,W,H){ctx.clearRect(0,0,W,H);const n=phases.length;const r=Math.min(H*0.36,120);
+    const cx=W*0.30,cy=H*0.5;phases.forEach((p,k)=>{const a=-Math.PI/2+k*2*Math.PI/n;const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);
+      const on=k===i,done=k<i;ctx.strokeStyle=SC.line;if(k<n-1||true){const a2=-Math.PI/2+((k+1)%n)*2*Math.PI/n;}
+      ctx.beginPath();ctx.fillStyle=on?p[2]:(done?'rgba(98,232,138,.5)':'#13203a');ctx.strokeStyle=on?p[2]:SC.line;ctx.lineWidth=on?3:1;
+      ctx.arc(x,y,on?22:17,0,7);ctx.fill();ctx.stroke();ctx.fillStyle=on?'#04121f':SC.mut;ctx.font='bold 12px monospace';ctx.textAlign='center';ctx.fillText(k+1,x,y+4);});
+    ctx.fillStyle=phases[i][2];ctx.font='bold 16px sans-serif';ctx.textAlign='left';ctx.fillText((i+1)+'. '+phases[i][0],W*0.52,H*0.30);
+    ctx.fillStyle=SC.ink;ctx.font='13px sans-serif';wrapT(ctx,phases[i][1],W*0.52,H*0.30+26,W*0.44,20);});
+  function refresh(){out.innerHTML='<b style="color:'+phases[i][2]+'">'+(i+1)+'. '+phases[i][0]+'</b> — '+phases[i][1];cv.redraw();}
+  $(btnId).addEventListener('click',()=>{i=(i+1)%phases.length;refresh();});
+  if($(resetId))$(resetId).addEventListener('click',()=>{i=0;refresh();});refresh();});}
+
+heroDemo(['mean','variance','lag'],'STATIONARY');
+window.__demos.push(function(){const c=$('#stCanvas'),out=$('#stOut');if(!c)return;let seed=1;
+  function rnd(){seed=(1103515245*seed+12345)&0x7fffffff;return seed/0x7fffffff*2-1;}
+  let wn=[],rw=[];function gen(){wn=[];rw=[];let r=0;for(let i=0;i<60;i++){const e=rnd();wn.push(e);r+=e;rw.push(r);}}
+  const cv=setupCanvas(c,function(ctx,W,H){ctx.clearRect(0,0,W,H);const mid=H/2;
+    ctx.strokeStyle=SC.line;ctx.beginPath();ctx.moveTo(30,mid);ctx.lineTo(W-20,mid);ctx.stroke();
+    function draw(a,col,sc){ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();a.forEach((v,i)=>{const x=30+i/59*(W-50),y=mid-v*sc;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();}
+    draw(wn,SC.grn,14);draw(rw,SC.red,7);
+    ctx.fillStyle=SC.grn;ctx.font='12px sans-serif';ctx.fillText('white noise (stationary)',40,20);ctx.fillStyle=SC.red;ctx.fillText('random walk (non-stationary)',40,36);});
+  function u(){const rwVar=(function(){const m=rw.reduce((a,b)=>a+b,0)/rw.length;return rw.reduce((s,v)=>s+(v-m)*(v-m),0)/rw.length;})();
+    out.innerHTML='White noise stays around 0 with steady spread; the random walk wanders (variance here ≈ <b>'+rwVar.toFixed(1)+'</b> and grows with length). Click for a new sample.';cv.redraw();}
+  $('#stStep').addEventListener('click',()=>{gen();u();});gen();u();});
+
+/* boot */
+window.addEventListener('load',()=>{runDemos(); initTheme(); initReveal(); initStory(); onScroll();
+  if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise();});
+
+</script>
+<!-- nav:start -->
+<style>
+/* collapsible left nav */
+html.nav-collapsed .sidebar{display:none}
+@media(min-width:821px){
+  html.nav-collapsed .shell{grid-template-columns:1fr}
+  html.nav-collapsed .progress{left:0}
+}
+#navToggle.on{background:var(--cyan,#38f0d8);color:#06241f;border-color:var(--cyan,#38f0d8)}
+/* MOBILE: the whole top-control cluster becomes compact icon-only buttons so it fits
+   in one row without overflowing or overlapping the Ask-Gemini button. */
+@media(max-width:820px){
+  .topctl{gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:66vw}
+  .topctl .btxt{display:none}
+  .topctl .topbtn{padding:8px 10px;font-size:13px}
+}
+</style>
+<script>
+(function(){
+  var K="ll_nav_collapsed", root=document.documentElement, btn=document.getElementById("navToggle");
+  function apply(c){root.classList.toggle("nav-collapsed",c);
+    if(btn){btn.classList.toggle("on",c);btn.setAttribute("aria-pressed",c?"true":"false");
+      btn.title=c?"Show the menu":"Hide the menu";}}
+  try{apply(localStorage.getItem(K)==="1");}catch(e){}
+  if(btn)btn.addEventListener("click",function(){
+    var c=!root.classList.contains("nav-collapsed"); apply(c);
+    try{localStorage.setItem(K,c?"1":"0");}catch(e){}
+  });
+})();
+</script>
+<!-- nav:end -->
+<!-- gem:start -->
+<style>
+.gem-fab{position:fixed;right:18px;bottom:18px;z-index:80;display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono,monospace);font-size:13.5px;font-weight:700;cursor:pointer;border:none;
+  padding:12px 17px;border-radius:30px;color:#04121f;
+  background:linear-gradient(120deg,#69f0d0,#3aa0ff);box-shadow:0 8px 24px rgba(25,140,255,.4);transition:.16s}
+.gem-fab:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(25,140,255,.55)}
+.gem-panel{position:fixed;right:0;top:0;bottom:0;width:min(430px,94vw);z-index:81;display:flex;flex-direction:column;
+  background:var(--panel,#0e1729);border-left:1px solid var(--line,#1f2d4d);box-shadow:-18px 0 50px rgba(0,0,0,.5);
+  transform:translateX(100%);transition:transform .28s cubic-bezier(.3,.9,.3,1)}
+.gem-panel.open{transform:none}
+/* the setup/settings/body/foot classes set display:flex, which would override the
+   browser's [hidden]{display:none}. Force hidden to win, or views never switch. */
+.gem-panel [hidden]{display:none!important}
+.gem-grip{display:none}
+.gem-head{display:flex;align-items:center;gap:10px;padding:15px 16px;border-bottom:1px solid var(--line,#1f2d4d)}
+.gem-head h4{margin:0;font-size:15px;color:var(--ink,#e7edf9);font-weight:800;flex:1}
+.gem-head .gem-badge{font-family:var(--mono,monospace);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:#04121f;background:linear-gradient(120deg,#69f0d0,#3aa0ff);padding:2px 8px;border-radius:20px}
+.gem-ico{background:none;border:none;color:var(--muted,#93a4c8);cursor:pointer;font-size:16px;padding:5px;border-radius:8px;line-height:1}
+.gem-ico:hover{color:var(--ink,#fff);background:var(--panel2,#121d36)}
+.gem-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.gem-msg{border-radius:13px;padding:11px 14px;font-size:14px;line-height:1.6;max-width:92%;overflow-wrap:anywhere}
+.gem-msg.u{align-self:flex-end;background:linear-gradient(120deg,rgba(105,240,208,.16),rgba(58,160,255,.16));
+  border:1px solid rgba(58,160,255,.3);color:var(--ink,#e7edf9)}
+.gem-msg.a{align-self:flex-start;background:var(--panel2,#121d36);border:1px solid var(--line,#1f2d4d);color:var(--ink,#e7edf9)}
+.gem-msg.a b{color:var(--cyan,#38f0d8)}
+.gem-msg.a code{font-family:var(--mono,monospace);background:rgba(0,0,0,.25);padding:.08em .38em;border-radius:5px;font-size:.9em}
+.gem-msg.sys{align-self:center;color:var(--muted,#93a4c8);font-size:12.5px;text-align:center;max-width:100%}
+.gem-foot{border-top:1px solid var(--line,#1f2d4d);padding:12px;display:flex;gap:9px;align-items:flex-end}
+.gem-foot textarea{flex:1;resize:none;min-height:40px;max-height:140px;font-family:inherit;font-size:14px;
+  background:var(--bg,#06101f);border:1px solid var(--line,#1f2d4d);color:var(--ink,#e7edf9);border-radius:11px;padding:10px 12px;outline:none}
+.gem-foot textarea:focus{border-color:var(--cyan,#38f0d8)}
+.gem-send{border:none;cursor:pointer;border-radius:11px;padding:0 15px;height:40px;font-weight:800;color:#04121f;
+  background:linear-gradient(120deg,#69f0d0,#3aa0ff)}
+.gem-send:disabled{opacity:.45;cursor:default}
+.gem-setup{padding:18px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.gem-setup p{margin:0;color:var(--muted,#93a4c8);font-size:13.5px;line-height:1.6}
+.gem-setup input,.gem-setup select{width:100%;font-family:var(--mono,monospace);font-size:13px;
+  background:var(--bg,#06101f);border:1px solid var(--line,#1f2d4d);color:var(--ink,#e7edf9);border-radius:10px;padding:11px 12px;outline:none}
+.gem-setup input:focus,.gem-setup select:focus{border-color:var(--cyan,#38f0d8)}
+.gem-setup .gem-primary{border:none;cursor:pointer;border-radius:10px;padding:12px;font-weight:800;color:#04121f;
+  background:linear-gradient(120deg,#69f0d0,#3aa0ff)}
+.gem-setup .gem-primary:disabled{opacity:.5;cursor:default}
+.gem-setup .gem-ghost{background:none;border:1px solid var(--line,#1f2d4d);cursor:pointer;border-radius:10px;padding:11px;color:var(--muted,#93a4c8);font-size:13.5px}
+.gem-setup .gem-ghost:hover{border-color:var(--cyan,#38f0d8);color:var(--ink,#e7edf9)}
+.gem-setup a{color:var(--cyan2,#19c4ff)}
+.gem-note{font-size:12px;color:var(--dim,#64759c);line-height:1.55}
+.gem-err{color:var(--red,#ff6b81);font-size:13px}
+.gem-typing{align-self:flex-start;color:var(--muted,#93a4c8);font-size:13px;font-style:italic}
+[data-theme="light"] .gem-panel{background:#fff}
+[data-theme="light"] .gem-head h4{color:#0d1730}
+[data-theme="light"] .gem-ico{color:#586a8a}
+[data-theme="light"] .gem-head,[data-theme="light"] .gem-foot{border-color:#dde4f0}
+[data-theme="light"] .gem-msg{color:#16223d}
+[data-theme="light"] .gem-msg.u{background:linear-gradient(120deg,rgba(105,240,208,.16),rgba(58,160,255,.16));border-color:rgba(58,160,255,.35);color:#0d1730}
+[data-theme="light"] .gem-msg.a{background:#f5f8fe;border-color:#dde4f0;color:#16223d}
+[data-theme="light"] .gem-msg.a b{color:#0a7ea8}
+[data-theme="light"] .gem-msg.a code{background:#e8eef7;color:#0d1730}
+[data-theme="light"] .gem-msg.sys{color:#586a8a}
+[data-theme="light"] .gem-foot textarea,[data-theme="light"] .gem-setup input,[data-theme="light"] .gem-setup select{background:#fff;color:#16223d;border-color:#d8e0ee}
+[data-theme="light"] .gem-setup p{color:#46566f}
+[data-theme="light"] .gem-setup b{color:#0d1730}
+[data-theme="light"] .gem-note{color:#7a89a8}
+[data-theme="light"] .gem-grip::before{background:#8693b0}
+/* WIDE SCREEN: opening the panel reflows the page beside it (side-by-side). */
+body{transition:margin-right .28s cubic-bezier(.3,.9,.3,1)}
+html.gem-open .gem-fab{display:none}
+@media(min-width:900px){
+  html.gem-open body{margin-right:432px}
+  html.gem-open .topctl{right:calc(432px + 18px)}
+  html.gem-open .progress{right:432px}
+}
+/* MOBILE: the button goes bottom-LEFT (top controls are bottom-RIGHT). When open,
+   the panel docks to the BOTTOM as a sheet and the page keeps the top portion —
+   a horizontal split: lecture content on top, Gemini below. */
+@media(max-width:820px){
+  .gem-fab{left:12px;right:auto;bottom:12px;padding:11px 15px}
+  .gem-panel{left:0;right:0;bottom:0;top:auto;width:100%;height:var(--gem-h,58vh);
+    border-left:none;border-top:1px solid var(--line,#1f2d4d);border-radius:16px 16px 0 0;
+    box-shadow:0 -18px 50px rgba(0,0,0,.5);transform:translateY(100%)}
+  html.gem-open body{padding-bottom:var(--gem-h,58vh)}
+  .gem-grip{display:block;height:22px;flex:none;cursor:ns-resize;touch-action:none;position:relative}
+  .gem-grip::before{content:"";position:absolute;left:50%;top:9px;transform:translateX(-50%);
+    width:42px;height:4px;border-radius:3px;background:var(--muted,#93a4c8);opacity:.55}
+  .gem-grip:active::before{opacity:.95;background:var(--cyan,#38f0d8)}
+}
+</style>
+
+<button class="gem-fab" id="gemFab" title="Ask Gemini about this page">&#10022; Ask Gemini</button>
+<aside class="gem-panel" id="gemPanel" aria-hidden="true">
+  <div class="gem-grip" id="gemGrip" title="Drag to resize" aria-hidden="true"></div>
+  <div class="gem-head">
+    <span class="gem-badge">Gemini</span>
+    <h4>Ask about this page</h4>
+    <button class="gem-ico" id="gemGear" title="Settings">&#9881;</button>
+    <button class="gem-ico" id="gemClose" title="Close">&#10005;</button>
+  </div>
+  <div class="gem-setup" id="gemSetup" hidden>
+    <p><b>Bring your own key.</b> Google&rsquo;s Gemini with <b>your</b> free key &mdash; stored only in this browser, sent straight to Google.</p>
+    <p>Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>, then paste it below.</p>
+    <input id="gemKey" type="password" placeholder="Paste your Gemini API key" autocomplete="off" spellcheck="false">
+    <button class="gem-primary" id="gemSave">Connect</button>
+    <div class="gem-err" id="gemSetupErr"></div>
+    <div class="gem-note">Uses <b>gemini-3.6-flash</b> (free) by default. Change the model or key any time from the &#9881; menu.</div>
+  </div>
+  <div class="gem-setup" id="gemSettings" hidden>
+    <p><b>Settings</b></p>
+    <label class="gem-note" for="gemModel">Model &mdash; flash options are free</label>
+    <select id="gemModel"></select>
+    <button class="gem-primary" id="gemApply">Save &amp; back to chat</button>
+    <button class="gem-ghost" id="gemChangeKey">Change API key</button>
+    <div class="gem-err" id="gemSettingsErr"></div>
+  </div>
+  <div class="gem-body" id="gemBody" hidden></div>
+  <div class="gem-foot" id="gemFoot" hidden>
+    <textarea id="gemInput" rows="1" placeholder="Ask anything about this page&hellip;"></textarea>
+    <button class="gem-send" id="gemSendBtn" title="Send">&#10148;</button>
+  </div>
+</aside>
+
+<script>
+(function(){
+  var API="https://generativelanguage.googleapis.com/v1beta/";
+  var LS_KEY="gem_api_key", LS_MODEL="gem_model";
+  var $=function(id){return document.getElementById(id);};
+  var panel=$("gemPanel"), fab=$("gemFab");
+  if(!panel||!fab) return;
+  var setup=$("gemSetup"), settings=$("gemSettings"), body=$("gemBody"), foot=$("gemFoot"),
+      keyIn=$("gemKey"), modelSel=$("gemModel"), saveBtn=$("gemSave"),
+      setupErr=$("gemSetupErr"), settingsErr=$("gemSettingsErr"),
+      input=$("gemInput"), sendBtn=$("gemSendBtn");
+  var history=[];               // [{role:'user'|'model', text}]
+  var busy=false;
+
+  function getKey(){try{return localStorage.getItem(LS_KEY)||"";}catch(e){return "";}}
+  function getModel(){try{return localStorage.getItem(LS_MODEL)||"";}catch(e){return "";}}
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+  // minimal, safe markdown -> html for answers
+  function md(s){
+    s=esc(s);
+    s=s.replace(/```([\s\S]*?)```/g,function(_,c){return "<pre style='white-space:pre-wrap;overflow-x:auto'><code>"+c.trim()+"</code></pre>";});
+    s=s.replace(/`([^`]+)`/g,"<code>$1</code>");
+    s=s.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+    s=s.replace(/^\s*[-*]\s+(.*)$/gm,"&bull; $1");
+    return s.replace(/\n/g,"<br>");
+  }
+
+  // the visible lecture text, so answers are grounded in THIS page
+  function pageText(){
+    var el=document.querySelector("main")||document.body;
+    var t=(el.innerText||"").replace(/\n{3,}/g,"\n\n").trim();
+    return t.slice(0,24000);
+  }
+  function pageTitle(){
+    var h=document.querySelector("h1");
+    return (h?h.innerText:document.title).trim();
+  }
+
+  function addMsg(role,htmlOrText,isHtml){
+    var d=document.createElement("div");
+    d.className="gem-msg "+role;
+    d.innerHTML=isHtml?htmlOrText:esc(htmlOrText);
+    body.appendChild(d); body.scrollTop=body.scrollHeight; return d;
+  }
+
+  function hideViews(){ setup.hidden=true; settings.hidden=true; body.hidden=true; foot.hidden=true; }
+  function showChat(){
+    hideViews(); body.hidden=false; foot.hidden=false;   // ONLY the chat — no setup clutter
+    if(!body.dataset.greeted){
+      addMsg("sys","Ask about anything on this page &mdash; a concept, a step in a worked example, or &ldquo;explain this more simply&rdquo;. Answers use the page you&rsquo;re reading as context.",true);
+      body.dataset.greeted="1";
+    }
+    setTimeout(function(){input.focus();},50);
+  }
+  function showSetup(){ hideViews(); setup.hidden=false; keyIn.value=""; setupErr.textContent=""; setTimeout(function(){keyIn.focus();},50); }
+
+  function openPanel(){
+    panel.classList.add("open"); panel.setAttribute("aria-hidden","false");
+    document.documentElement.classList.add("gem-open");   // reflow content beside the panel
+    if(getKey()&&getModel()) showChat(); else showSetup();
+  }
+  function closePanel(){
+    panel.classList.remove("open"); panel.setAttribute("aria-hidden","true");
+    document.documentElement.classList.remove("gem-open");
+  }
+
+  fab.addEventListener("click",openPanel);
+  $("gemClose").addEventListener("click",closePanel);
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&panel.classList.contains("open"))closePanel();});
+
+  // fetch + filter + sort the models a key can use (recommended default first)
+  var PREF="models/gemini-3.6-flash";
+  function isFree(m){return /flash|flash-lite|gemma/.test(m.name);}
+  function fetchModels(key,ok,err){
+    fetch(API+"models?key="+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){
+      if(d.error){err(d.error.message||"That key was rejected.");return;}
+      var ms=(d.models||[]).filter(function(m){return (m.supportedGenerationMethods||[]).indexOf("generateContent")>=0;});
+      if(!ms.length){err("Key works, but no usable models were returned.");return;}
+      ms.sort(function(a,b){if(a.name===PREF)return -1;if(b.name===PREF)return 1;return (isFree(a)?0:1)-(isFree(b)?0:1);});
+      ok(ms);
+    }).catch(function(){err("Network error reaching Google. Are you online, and viewing over http(s) rather than a local file?");});
+  }
+
+  // SETUP: ONE click — validate key, auto-select gemini-3.6-flash, go straight to chat
+  function connect(){
+    var k=keyIn.value.trim();
+    if(!k){setupErr.textContent="Paste your key first.";return;}
+    setupErr.textContent="Connecting…"; saveBtn.disabled=true;
+    fetchModels(k,function(ms){
+      saveBtn.disabled=false;
+      var have=function(n){return ms.some(function(m){return m.name===n;});};
+      var def=have(PREF)?PREF:(ms.filter(isFree)[0]||ms[0]).name;
+      try{localStorage.setItem(LS_KEY,k);localStorage.setItem(LS_MODEL,def);}catch(e){}
+      showChat();
+    },function(msg){saveBtn.disabled=false;setupErr.textContent=msg;});
+  }
+  saveBtn.addEventListener("click",connect);
+  keyIn.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();connect();}});
+
+  // SETTINGS (gear): change model or key here — kept out of the chat view
+  function showSettings(){
+    hideViews(); settings.hidden=false; settingsErr.textContent="Loading models…"; modelSel.innerHTML="";
+    fetchModels(getKey(),function(ms){
+      settingsErr.textContent="";
+      modelSel.innerHTML=ms.map(function(m){var n=m.name.replace(/^models\//,"");
+        var tag=(m.name===PREF)?"  — recommended (free)":(isFree(m)?"  — free tier":"  — may need billing");
+        return "<option value='"+m.name+"'>"+n+tag+"</option>";}).join("");
+      var saved=getModel(), have=function(n){return ms.some(function(m){return m.name===n;});};
+      modelSel.value=have(saved)?saved:(have(PREF)?PREF:ms[0].name);
+    },function(msg){settingsErr.textContent=msg;});
+  }
+  $("gemGear").addEventListener("click",function(){ if(getKey()) showSettings(); else showSetup(); });
+  $("gemApply").addEventListener("click",function(){
+    if(modelSel.value){try{localStorage.setItem(LS_MODEL,modelSel.value);}catch(e){}}
+    showChat();
+  });
+  $("gemChangeKey").addEventListener("click",function(){
+    try{localStorage.removeItem(LS_KEY);localStorage.removeItem(LS_MODEL);}catch(e){}
+    history=[]; body.innerHTML=""; delete body.dataset.greeted; showSetup();
+  });
+
+  function systemText(){
+    return "You are a friendly, precise study tutor embedded inside an interactive lecture page. "
+      + "The student is reading the page titled \""+pageTitle()+"\". Answer their questions using the PAGE CONTENT below as the primary source; "
+      + "you may add helpful background, but stay consistent with the page and keep answers focused and student-friendly. "
+      + "Use short paragraphs; use **bold** for key terms and `code` for formulas or code. If asked something the page doesn't cover, say so briefly, then help anyway.\n\n"
+      + "===== PAGE CONTENT =====\n"+pageText();
+  }
+
+  function send(){
+    var q=input.value.trim();
+    if(!q||busy) return;
+    var key=getKey(), model=getModel();
+    if(!key||!model){showSetup();return;}
+    input.value=""; input.style.height="auto";
+    addMsg("u",q);
+    history.push({role:"user",text:q});
+    busy=true; sendBtn.disabled=true;
+    var typing=addMsg("typing","Gemini is thinking…",false); typing.className="gem-typing";
+    var payload={
+      systemInstruction:{parts:[{text:systemText()}]},
+      contents:history.map(function(m){return {role:m.role,parts:[{text:m.text}]};}),
+      generationConfig:{temperature:0.4,maxOutputTokens:1200}
+    };
+    fetch(API+model+":generateContent?key="+encodeURIComponent(key),{
+      method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)
+    }).then(function(r){return r.json();}).then(function(d){
+      typing.remove(); busy=false; sendBtn.disabled=false;
+      if(d.error){
+        var er=d.error, qm=er.code===429||er.status==="RESOURCE_EXHAUSTED"||/quota|exhausted/i.test(er.message||"");
+        if(qm){
+          addMsg("sys",'<span class="gem-err">This model has <b>no free quota</b> on your Google account (the free limit is 0). '
+            +'Open <b>&#9881; Settings</b> and choose the recommended <code>gemini-3.6-flash</code> (free), then ask again.</span>',true);
+        } else if(er.code===400&&/API key/i.test(er.message||"")){
+          addMsg("sys",'<span class="gem-err">Your key was rejected. Open <b>&#9881; Settings</b> &rarr; <b>Change API key</b> and paste a fresh one.</span>',true);
+        } else {
+          addMsg("sys",'<span class="gem-err">'+esc(er.message||"Request failed")+"</span>",true);
+        }
+        return;
+      }
+      var c=d.candidates&&d.candidates[0];
+      var txt=c&&c.content&&c.content.parts?c.content.parts.map(function(p){return p.text||"";}).join(""):"";
+      if(!txt){
+        var why=c&&c.finishReason?(" ("+c.finishReason+")"):"";
+        addMsg("sys",'<span class="gem-err">No answer returned'+why+". Try rephrasing.</span>",true);return;
+      }
+      addMsg("a",md(txt),true);
+      history.push({role:"model",text:txt});
+      input.focus();
+    }).catch(function(){
+      typing.remove(); busy=false; sendBtn.disabled=false;
+      addMsg("sys",'<span class="gem-err">Network error reaching Gemini.</span>',true);
+    });
+  }
+  sendBtn.addEventListener("click",send);
+  input.addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
+  input.addEventListener("input",function(){input.style.height="auto";input.style.height=Math.min(input.scrollHeight,140)+"px";});
+
+  // MOBILE: drag the grip up/down to resize the bottom sheet; remember the height.
+  var grip=$("gemGrip"), LS_H="gem_sheet_h";
+  function isMobile(){return window.matchMedia("(max-width:820px)").matches;}
+  function savedH(){var v=parseFloat(localStorage.getItem(LS_H));return (v>=30&&v<=90)?v:58;}
+  function setH(vh){vh=Math.max(32,Math.min(88,vh));
+    document.documentElement.style.setProperty("--gem-h",vh.toFixed(1)+"vh");return vh;}
+  try{document.documentElement.style.setProperty("--gem-h",savedH()+"vh");}catch(e){}
+  if(grip){
+    var dragging=false;
+    function gy(e){return (e.touches&&e.touches[0])?e.touches[0].clientY:e.clientY;}
+    function down(e){ if(!isMobile())return; dragging=true; e.preventDefault(); }
+    function move(e){ if(!dragging)return; e.preventDefault();
+      var vh=(window.innerHeight-gy(e))/window.innerHeight*100; var v=setH(vh);
+      try{localStorage.setItem(LS_H,String(Math.round(v)));}catch(e2){} }
+    function up(){ dragging=false; }
+    grip.addEventListener("pointerdown",down);
+    window.addEventListener("pointermove",move,{passive:false});
+    window.addEventListener("pointerup",up);
+    grip.addEventListener("touchstart",down,{passive:false});
+    window.addEventListener("touchmove",move,{passive:false});
+    window.addEventListener("touchend",up);
+  }
+
+  // CROSS-TAB: the key + model live in localStorage, already shared across every tab
+  // of this site. If another tab changes them while this panel is open, sync live.
+  window.addEventListener("storage",function(e){
+    if(e.key!==LS_KEY&&e.key!==LS_MODEL&&e.key!==null)return;
+    if(!panel.classList.contains("open"))return;
+    if(getKey()&&getModel()){ if(!setup.hidden) showChat(); }
+    else { showSetup(); }
+  });
+})();
+</script>
+<!-- gem:end -->
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}(function(){function cb(){try{if(navigator.clearAppBadge)navigator.clearAppBadge();}catch(e){}try{if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.controller.postMessage('clear-badge');}catch(e){}}cb();document.addEventListener('visibilitychange',function(){if(!document.hidden)cb();});})();</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"c4013ec42b2e4df7aabd813c1193e4ce","r":1}' crossorigin="anonymous"></script>
+</body></html>

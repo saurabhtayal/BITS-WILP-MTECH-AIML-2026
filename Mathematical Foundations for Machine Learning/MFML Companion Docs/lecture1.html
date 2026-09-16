@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FBF8F1">
+<meta name="color-scheme" content="light">
+<title>Systems of Linear Equations · The Friendly Version</title>
+<style>
+:root{
+  --paper:#FBF8F1;
+  --card:#FFFFFF;
+  --ink:#232A3B;
+  --soft:#5B6478;
+  --faint:#98A1B3;
+  --line:#E7E1D2;
+  --grid:#EEE9DB;
+  --indigo:#4F46E5;
+  --teal:#0D9488;
+  --amber:#D97706;
+  --rose:#E11D48;
+  --violet:#7C3AED;
+  --green:#16A34A;
+  --sky:#0284C7;
+  --shadow:0 10px 30px rgba(35,42,59,.08), 0 2px 6px rgba(35,42,59,.06);
+  --r:20px;
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;color:var(--ink);background:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:30px 30px;
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  font-size:17.5px;line-height:1.7;
+  overflow-x:hidden;
+}
+::selection{background:#FDE68A}
+a{color:var(--indigo);text-decoration:none}
+b,strong{color:var(--ink)}
+p{margin:.9em 0}
+
+/* ---------- top bar ---------- */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:80;background:rgba(251,248,241,.88);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;padding:8px 16px;transform:translateY(-110%);transition:transform .3s ease}
+.topbar.show{transform:none}
+.topbar .tname{font-weight:800;font-size:13.5px;white-space:nowrap}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pills a{font-size:12px;font-weight:700;padding:4px 11px;border-radius:30px;border:1.5px solid var(--line);color:var(--soft);background:#fff;white-space:nowrap}
+.pills a.active{border-color:var(--ink);color:var(--ink)}
+.progressbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:90;pointer-events:none}
+.progressbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--indigo),var(--teal),var(--amber),var(--rose),var(--violet))}
+
+/* ---------- hero ---------- */
+.hero{max-width:1080px;margin:0 auto;padding:72px 22px 30px;text-align:center}
+.hero .crumb{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.hero h1{font-size:clamp(38px,7vw,74px);line-height:1.02;margin:.25em 0 .15em;font-weight:900;letter-spacing:-.03em}
+.hero h1 .accent{color:var(--indigo)}
+.hero .sub{font-size:clamp(17px,2.4vw,21px);color:var(--soft);max-width:760px;margin:0 auto}
+.hero .credit{font-size:13px;color:var(--faint);margin-top:14px}
+.hl{background:linear-gradient(180deg,transparent 58%,#FDE68A 58%);padding:0 2px;border-radius:2px}
+.hlr{background:linear-gradient(180deg,transparent 58%,#FECDD3 58%);padding:0 2px;border-radius:2px}
+.hlg{background:linear-gradient(180deg,transparent 58%,#BBF7D0 58%);padding:0 2px;border-radius:2px}
+
+/* ---------- layout ---------- */
+.part{max-width:1080px;margin:0 auto;padding:30px 22px 10px}
+.parthead{display:flex;align-items:baseline;gap:14px;margin:44px 0 6px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-weight:800;font-size:12.5px;letter-spacing:.12em;color:#fff;background:var(--acc,var(--indigo));padding:5px 13px;border-radius:30px;white-space:nowrap}
+.parthead h2{font-size:clamp(26px,4vw,40px);margin:0;font-weight:900;letter-spacing:-.02em}
+.parthead .why{width:100%;color:var(--soft);font-size:16.5px;margin-top:2px}
+.block{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:26px 28px;margin:24px 0}
+.block h3{margin:.1em 0 .45em;font-size:21px;font-weight:850;letter-spacing:-.01em}
+.block h4{margin:1.1em 0 .35em;font-size:15px;font-weight:800;color:var(--acc,var(--indigo));letter-spacing:.02em;text-transform:uppercase;font-family:var(--mono);font-size:12.5px}
+.note{border-left:4px solid var(--acc,var(--indigo));background:color-mix(in srgb, var(--acc,var(--indigo)) 6%, #fff);border-radius:0 14px 14px 0;padding:12px 18px;margin:16px 0;color:var(--soft)}
+.note b{color:var(--ink)}
+.stick{background:#FEF6C7;border:1px solid #F2E29B;border-radius:14px;padding:14px 18px;margin:18px 0;
+  box-shadow:0 6px 16px rgba(180,150,20,.12);transform:rotate(-.4deg);color:#5A4A12;font-size:16px}
+.stick b{color:#443806}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;min-width:0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;min-width:0}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* ---------- math (hand-styled, no libraries) ---------- */
+.eq{font-size:1.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.eq i, i.v{font-style:italic;font-family:Georgia,'Times New Roman',serif;font-size:1.04em}
+sub{font-size:.68em}
+.eqcard{background:#FDFCF8;border:1.5px solid var(--line);border-left:5px solid var(--acc,var(--indigo));
+  border-radius:14px;padding:14px 20px;margin:16px 0;overflow-x:auto;text-align:center;font-size:1.12em}
+.eqcard .eq{white-space:nowrap}
+.eqrow{display:flex;gap:8px 26px;flex-wrap:wrap;justify-content:center;align-items:center}
+
+/* matrices as bracket-tables */
+.mx{display:inline-flex;align-items:stretch;vertical-align:middle;margin:3px 6px}
+.mx::before,.mx::after{content:"";width:8px;border:2.2px solid var(--ink);align-self:stretch;opacity:.75}
+.mx::before{border-right:none;border-radius:8px 0 0 8px}
+.mx::after{border-left:none;border-radius:0 8px 8px 0}
+.mx table{border-collapse:collapse}
+.mx td{padding:5px 10px;text-align:center;min-width:30px;font-variant-numeric:tabular-nums;transition:background .25s,color .25s,transform .25s}
+.mx td.bar{border-left:2.5px solid var(--amber)}
+.mx td.hot{background:#EDE9FE;color:var(--violet);font-weight:800;border-radius:8px}
+.mx td.hotr{background:#E0F2F1;color:var(--teal);font-weight:800;border-radius:8px}
+.mx td.win{background:#DCFCE7;color:var(--green);font-weight:800;border-radius:8px}
+.mx td.bad{background:#FFE4E6;color:var(--rose);font-weight:800;border-radius:8px}
+.mx td.piv{background:#FEF3C7;color:var(--amber);font-weight:850;border-radius:8px}
+.mx td.dim{color:var(--faint)}
+.mxlab{font-family:var(--mono);font-size:13.5px;color:var(--soft);margin:0 6px;align-self:center}
+
+/* ---------- lamps & clue rows ---------- */
+.lamp{display:inline-block;width:13px;height:13px;border-radius:50%;background:#D7DBE4;vertical-align:-1px;transition:all .25s}
+.lamp.on{background:var(--green);box-shadow:0 0 0 4px rgba(22,163,74,.18),0 0 10px rgba(22,163,74,.6)}
+.lamp.off{background:var(--rose);box-shadow:0 0 0 4px rgba(225,29,72,.12)}
+.cluerow{display:flex;align-items:center;gap:12px;padding:9px 14px;border:1.5px solid var(--line);border-radius:14px;margin:8px 0;background:#FDFCF8;flex-wrap:wrap}
+.cluerow .eq{flex:1;min-width:180px}
+.cluerow .cstat{font-family:var(--mono);font-size:13px;color:var(--soft);white-space:nowrap}
+
+/* ---------- controls ---------- */
+.dial{display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap}
+.dial label{min-width:110px;font-weight:700;font-size:14.5px}
+.dial input[type=range]{flex:1;min-width:130px;accent-color:var(--acc,var(--indigo));height:26px}
+.dial .dv{font-family:var(--mono);font-weight:800;min-width:52px;text-align:right;color:var(--acc,var(--indigo));font-size:16px}
+.btn{font-family:inherit;font-weight:750;font-size:14px;background:#fff;border:2px solid var(--ink);color:var(--ink);
+  padding:8px 16px;border-radius:30px;cursor:pointer;transition:.15s;box-shadow:0 2px 0 var(--ink)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 var(--ink)}
+.btn:active{transform:translateY(1px);box-shadow:0 1px 0 var(--ink)}
+.btn.primary{background:var(--acc,var(--indigo));border-color:var(--acc,var(--indigo));color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.btn.ghost{border-color:var(--line);box-shadow:0 2px 0 var(--line);color:var(--soft)}
+.btn.tab.active{background:var(--acc,var(--indigo));border-color:var(--acc,var(--indigo));color:#fff}
+.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.btnrow{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0;align-items:center}
+select.sel{font-family:inherit;font-weight:700;font-size:14px;padding:7px 12px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink)}
+
+/* ---------- canvas + console ---------- */
+canvas{display:block;max-width:100%;border-radius:14px}
+.stagecard{background:#FDFCF8;border:1.5px solid var(--line);border-radius:16px;padding:10px}
+.console{font-family:var(--mono);font-size:14px;background:#232A3B;color:#D9E2F5;border-radius:14px;
+  padding:14px 16px;margin-top:12px;white-space:pre-wrap;overflow-x:auto;line-height:1.65}
+.console .y{color:#FBBF24}.console .g{color:#4ADE80}.console .r{color:#FB7185}.console .p{color:#C4B5FD}.console .c{color:#67E8F9}
+.verdict{display:inline-block;font-family:var(--mono);font-weight:850;font-size:13px;border-radius:30px;padding:3px 13px;border:2px solid}
+.verdict.v1{color:var(--green);border-color:var(--green);background:#F0FDF4}
+.verdict.v0{color:var(--rose);border-color:var(--rose);background:#FFF1F2}
+.verdict.vinf{color:var(--violet);border-color:var(--violet);background:#F5F3FF}
+
+/* ---------- scrollytelling ---------- */
+.scrolly{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:26px;margin:20px 0}
+.scrolly .steps{min-width:0}
+.scrolly .step{border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:16px 20px;margin:0 0 60vh;opacity:.35;transition:opacity .3s, border-color .3s;box-shadow:var(--shadow)}
+.scrolly .step:last-child{margin-bottom:12vh}
+.scrolly .step.live{opacity:1;border-color:var(--acc,var(--indigo))}
+.scrolly .stage{position:sticky;top:64px;align-self:start;min-width:0}
+@media(max-width:900px){
+  .scrolly{grid-template-columns:1fr}
+  .scrolly .stage{position:sticky;top:52px;z-index:5;order:-1;background:var(--paper);padding-bottom:6px}
+  .scrolly .step{margin:0 0 34vh;opacity:.5}
+}
+
+/* ---------- resource meters (factory) ---------- */
+.meter{display:flex;align-items:center;gap:10px;margin:9px 0;flex-wrap:wrap}
+.meter .mlab{min-width:96px;font-weight:750;font-size:14.5px}
+.mtrack{flex:1;min-width:150px;height:22px;background:#EFEBDF;border-radius:9px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.mfill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#818CF8,#6366F1);transition:width .2s ease;border-radius:8px 0 0 8px}
+.mfill.full{background:linear-gradient(90deg,#34D399,#16A34A)}
+.mfill.over{background:linear-gradient(90deg,#FB7185,#E11D48)}
+.mnum{min-width:62px;text-align:right;font-family:var(--mono);font-weight:750;font-size:14px}
+
+/* ---------- quiz ---------- */
+.qcard{border:1.5px solid var(--line);border-radius:16px;padding:18px 22px;margin:14px 0;background:#fff}
+.qcard .qq{font-weight:800;margin-bottom:10px}
+.qopt{display:block;width:100%;text-align:left;font-family:inherit;font-size:15.5px;background:#FDFCF8;border:2px solid var(--line);
+  border-radius:12px;padding:10px 14px;margin:7px 0;cursor:pointer;transition:.15s}
+.qopt:hover{border-color:var(--faint)}
+.qopt.right{border-color:var(--green);background:#F0FDF4;font-weight:700}
+.qopt.wrong{border-color:var(--rose);background:#FFF1F2}
+.qwhy{display:none;font-size:14.5px;color:var(--soft);border-top:1.5px dashed var(--line);margin-top:10px;padding-top:10px}
+.qcard.done .qwhy{display:block}
+
+/* ---------- cheat card ---------- */
+.cheat{background:linear-gradient(135deg,#232A3B,#3B3366);color:#EDEBFF;border-radius:22px;padding:28px 30px;margin:26px 0;box-shadow:var(--shadow)}
+.cheat h3{color:#fff;margin:0 0 10px;font-size:22px}
+.cheat ol{margin:8px 0 0;padding-left:22px}
+.cheat li{margin:7px 0;color:#D6D3F0}
+.cheat li b{color:#FDE68A}
+.cheat .eq{color:#fff}
+
+.foot{max-width:1080px;margin:30px auto 60px;padding:0 22px;color:var(--faint);font-size:13.5px;text-align:center}
+.bigemoji{font-size:38px;line-height:1}
+.tag{display:inline-block;font-family:var(--mono);font-size:12px;padding:3px 11px;border-radius:20px;border:1.5px solid var(--line);color:var(--soft);margin:3px 4px 3px 0;background:#fff}
+@media(max-width:520px){.eq{white-space:normal}}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
+
+/* ===================================================================
+   BUILDING-BLOCKS WIDGETS
+   =================================================================== */
+.mxscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0}
+.slotlist{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.slotlist .slot{border:1.5px solid var(--line);background:#FDFCF8;border-radius:12px;padding:7px 12px;font-size:14px;min-width:0}
+.slotlist .slot b{display:block;font-family:var(--mono);font-size:18px;color:var(--acc,var(--indigo))}
+.slotlist .slot span{color:var(--soft);font-size:12.5px}
+
+.pxwrap{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.pxgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;background:var(--line);
+  border:1px solid var(--line);border-radius:10px;padding:2px;touch-action:none;
+  width:100%;max-width:260px;user-select:none;-webkit-user-select:none}
+.pxgrid i{display:block;aspect-ratio:1/1;background:#fff;border-radius:3px;cursor:pointer}
+.numgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;font-family:var(--mono);
+  font-size:13px;text-align:center;width:100%;max-width:260px}
+.numgrid span{padding:2px 0;color:#C9CEDA}
+.numgrid span.on{color:var(--ink);font-weight:800}
+
+.dtab{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabular-nums}
+.dtab th{font-size:12px;font-family:var(--mono);color:var(--soft);font-weight:700;
+  padding:3px 6px;text-align:center;letter-spacing:.04em;white-space:nowrap}
+.dtab td{border:1.5px solid var(--line);border-radius:9px;padding:8px 11px;text-align:center;
+  cursor:pointer;transition:.15s;background:#fff;white-space:nowrap}
+.dtab td.rowhi{background:#FEF3C7;border-color:#F0C674}
+.dtab td.colhi{background:#DCFCE7;border-color:#86D9A6}
+.dtab td.tgt{background:#F5F3FF;color:var(--violet);font-weight:800;border-color:#C9BDF0}
+.dtab td.tgt.rowhi{background:#FDF0D8}
+.dtab .rlab{font-size:13px;color:var(--soft);cursor:default;border:none;background:none;
+  text-align:right;padding-right:8px}
+.namebox{border:1.5px dashed var(--line);border-radius:14px;padding:12px 15px;margin-top:12px;
+  background:#FDFCF8;font-size:15px;min-height:78px}
+.namebox b{color:var(--acc,var(--indigo))}
+.chip{display:inline-block;font-family:var(--mono);font-size:11.5px;padding:3px 9px;border-radius:20px;
+  border:1.5px solid var(--line);color:var(--soft);margin:3px 4px 0 0;background:#fff}
+
+.predrow{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.predrow .plab{min-width:104px;font-weight:750;font-size:14px}
+.ptrack{flex:1;min-width:140px;height:26px;background:#EFEBDF;border-radius:9px;position:relative;
+  overflow:hidden;border:1px solid var(--line)}
+.pfill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#7DD3FC,#0284C7);
+  transition:width .18s ease}
+.ptruth{position:absolute;top:-2px;bottom:-2px;width:3px;background:var(--violet);border-radius:2px}
+.pnum{min-width:96px;text-align:right;font-family:var(--mono);font-weight:750;font-size:13px}
+
+/* centred flex rows of matrices overflow BOTH edges on narrow screens —
+   left-align them and let the row scroll instead of falling off the page */
+#easyHost,#mmHost,#rmHost,#gmHost,#bsHost,#rrHost,#aiHost{
+  max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:760px){
+  #easyHost,#mmHost,#rmHost,#gmHost,#bsHost,#rrHost,#aiHost{
+    justify-content:flex-start !important;padding-bottom:4px}
+}
+
+/* anchor jumps must clear the sticky top bar */
+section.part{scroll-margin-top:58px}
+@media(max-width:640px){section.part{scroll-margin-top:50px}}
+
+/* ===================================================================
+   RESPONSIVE / MOBILE LAYER
+   =================================================================== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+img,canvas,svg,video{max-width:100%}
+table{max-width:100%}
+.console,.eqcard,.mxscroll{-webkit-overflow-scrolling:touch}
+
+/* the nav strip becomes swipeable instead of wrapping into 3 rows */
+.topbar{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.pills{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px}
+.pills::-webkit-scrollbar{display:none}
+
+@media(max-width:900px){
+  .part{padding:22px 16px 8px}
+  .block{padding:20px 18px;margin:18px 0;border-radius:16px}
+  .hero{padding:56px 18px 24px}
+  .foot{padding:0 16px}
+}
+
+@media(max-width:640px){
+  body{font-size:16.5px;line-height:1.62;background-size:24px 24px}
+  p{margin:.75em 0}
+  .part{padding:16px 13px 6px}
+  .block{padding:16px 14px;margin:15px 0;border-radius:14px}
+  .block h3{font-size:18.5px}
+  .parthead{margin:30px 0 4px;gap:9px}
+  .parthead .why{font-size:15px}
+  .hero{padding:46px 14px 18px}
+  .hero .sub{font-size:16px}
+  .hero .crumb{font-size:10.5px;letter-spacing:.08em;line-height:1.5}
+  .hero .credit{font-size:12px}
+  .topbar{padding:6px 10px;gap:8px}
+  .topbar .tname{display:none}
+  .pills a{font-size:11.5px;padding:6px 11px}
+
+  /* equations wrap rather than force the page sideways */
+  .eq{white-space:normal;overflow-wrap:anywhere}
+  .eqcard{padding:12px 11px;font-size:1.01em;overflow-x:auto}
+  .eqcard .eq{white-space:normal}
+  .eqrow{gap:6px 14px}
+
+  /* matrices: tighter cells so they fit, scroll if they still don't */
+  .mx td{padding:4px 7px;min-width:23px;font-size:.94em}
+  .mx::before,.mx::after{width:6px}
+  .mxlab{font-size:12.5px;margin:0 3px}
+
+  /* dials stack: label on its own line, then slider + readout */
+  .dial{display:grid;grid-template-columns:1fr auto;grid-template-areas:"lab lab" "rng val";
+    gap:5px 10px;margin:13px 0}
+  .dial label{grid-area:lab;min-width:0;font-size:14px}
+  .dial input[type=range]{grid-area:rng;width:100%;min-width:0;height:34px}
+  .dial .dv{grid-area:val;min-width:44px;align-self:center}
+
+  /* thumb-sized touch targets */
+  .btn{padding:10px 15px;font-size:14px;min-height:42px}
+  .btnrow{gap:8px}
+  .qopt{font-size:15px;padding:12px 13px;min-height:46px}
+  select.sel{min-height:42px;font-size:15px}
+
+  .meter{gap:7px}
+  .meter .mlab{flex:0 0 100%;min-width:0}
+  .mtrack{min-width:0}
+  .mnum{min-width:56px;font-size:13px}
+  .predrow .plab{flex:0 0 100%;min-width:0}
+  .ptrack{min-width:0}
+  .pnum{min-width:88px;font-size:12.5px}
+
+  .cluerow{gap:6px 10px;padding:10px 12px}
+  .cluerow .eq{flex:1 1 100%;min-width:0}
+  .cluerow .cstat{font-size:12px}
+  .console{font-size:12.5px;padding:12px 12px;line-height:1.6;border-radius:12px}
+  .stick{font-size:15px;padding:12px 14px;transform:none}
+  .note{padding:11px 13px;border-radius:0 12px 12px 0;font-size:15.5px}
+  .cheat{padding:20px 17px;border-radius:16px}
+  .cheat h3{font-size:19px}
+  .cheat ol{padding-left:19px}
+  .tag{font-size:11px;padding:3px 9px}
+  .qcard{padding:15px 14px;border-radius:14px}
+  .verdict{font-size:12px;padding:3px 10px}
+
+  /* scrollytelling: stage pinned on top, much shorter scroll gaps */
+  .scrolly{gap:12px;margin:14px 0}
+  .scrolly .step{padding:13px 15px;margin:0 0 26vh;border-radius:14px}
+  .scrolly .step:last-child{margin-bottom:8vh}
+  .scrolly .stage{top:44px}
+  .stagecard{padding:7px;border-radius:14px}
+
+  .slotlist .slot{padding:6px 10px;font-size:13px}
+  .slotlist .slot b{font-size:16px}
+  .dtab td{padding:7px 8px;font-size:14px}
+  .dtab th{font-size:11px;padding:2px 4px}
+  .namebox{font-size:14.5px;padding:11px 13px}
+  .pxwrap{gap:12px}
+  .numgrid{font-size:11.5px}
+}
+
+@media(max-width:400px){
+  body{font-size:16px}
+  .part{padding:14px 11px 4px}
+  .block{padding:14px 12px}
+  .mx td{padding:3px 5px;min-width:19px;font-size:.9em}
+  .dtab td{padding:6px 6px;font-size:13px}
+  .numgrid{font-size:10.5px}
+  .console{font-size:11.8px}
+}
+
+/* pointer-coarse devices: don't rely on hover, and keep sliders grabbable */
+@media(hover:none){
+  .btn:hover{transform:none;box-shadow:0 2px 0 var(--ink)}
+  .qopt:hover{border-color:var(--line)}
+  input[type=range]{height:32px}
+}
+
+</style>
+</head>
+<body>
+<div class="progressbar"><i id="pbar"></i></div>
+<div class="topbar" id="topbar">
+  <span class="tname">Linear Systems</span>
+  <nav class="pills" id="pillnav">
+    <a href="#p0">Try one</a>
+    <a href="#pv">1 · Blocks</a>
+    <a href="#p1">2 · Puzzle</a>
+    <a href="#p2">3 · Picture</a>
+    <a href="#p3">4 · Toolbox</a>
+    <a href="#p4">5 · Method</a>
+    <a href="#p5">6 · Payoff</a>
+  </nav>
+</div>
+<header class="hero">
+  <div class="crumb">ZC416 · Math Foundations for ML &amp; Data Science · Topic 1 · WILP, BITS Pilani</div>
+  <h1>Hidden numbers.<br><span class="accent">Honest clues.</span></h1>
+  <p class="sub">That's all a <b>system of linear equations</b> is — and this page builds the whole lecture from scratch — starting at "what is a vector" — through one game: <span class="hl">turn every lamp green</span>. No prior math needed. Everything is touchable.</p>
+  <p class="credit">An interactive re-telling of the Lecture 1 slides · works offline · nothing to install</p>
+</header>
+
+<!-- ================================================================ PART 0 -->
+<section class="part" id="p0" style="--acc:var(--indigo)">
+  <div class="parthead">
+    <span class="badge">TRY ONE · 20 SECONDS</span>
+    <h2>Solve a system right now</h2>
+    <div class="why">Before any definitions — you can already do this. Two numbers are hiding. You get two honest clues.</div>
+  </div>
+
+  <div class="block" id="hookBlock">
+    <div class="grid2">
+      <div>
+        <p style="margin-top:0">I'm thinking of two numbers, <span class="eq"><i>x</i></span> and <span class="eq"><i>y</i></span>.</p>
+        <div class="cluerow"><span class="lamp idle" id="hkL1"></span><span class="eq">clue 1: &nbsp;<i>x</i> + <i>y</i> = 5</span><span class="cstat" id="hkS1">now: ?</span></div>
+        <div class="cluerow"><span class="lamp idle" id="hkL2"></span><span class="eq">clue 2: &nbsp;<i>x</i> − <i>y</i> = 1</span><span class="cstat" id="hkS2">now: ?</span></div>
+        <p class="stick" style="margin-bottom:0"><b>Your goal, here and for this whole page:</b> drag the dials until <b>every lamp turns green at the same time</b>.</p>
+      </div>
+      <div>
+        <div class="dial"><label><span class="eq"><i>x</i></span> dial</label><input type="range" id="hkX" min="0" max="5" step="1" value="0"><span class="dv" id="hkXv">0</span></div>
+        <div class="dial"><label><span class="eq"><i>y</i></span> dial</label><input type="range" id="hkY" min="0" max="5" step="1" value="5"><span class="dv" id="hkYv">5</span></div>
+        <div class="console" id="hkOut">two clues, two dials — go</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ PART 1 · BUILDING BLOCKS -->
+<section class="part" id="pv" style="--acc:var(--sky)">
+  <div class="parthead">
+    <span class="badge">PART 1</span>
+    <h2>The building blocks</h2>
+    <div class="why">Before clues and answers: what a <b>vector</b> is, what a <b>matrix</b> is, and why your data is already one.</div>
+  </div>
+
+  <!-- ---------------------------------------------------------- 1A vector -->
+  <div class="block">
+    <h3>A vector is a list of numbers. That's it.</h3>
+    <p style="margin-top:0">One number can't describe much. "The flat costs 28" — but how big is it? How many bedrooms? So you answer with a <b>short list</b> instead, kept in a fixed order. That list is a <b>vector</b>.</p>
+
+    <div class="note"><b>The one rule.</b> Fix the order once and never change it. From then on slot 3 <em>means</em> the third thing — in every vector you write for that problem.</div>
+
+    <h4>build one yourself</h4>
+    <p style="margin-top:2px">A tea stall counts what it sold today. Drag the four dials — the vector on the right rebuilds itself.</p>
+    <div class="grid2">
+      <div>
+        <div class="dial"><label>teas</label><input type="range" id="vsA" min="0" max="30" step="1" value="14"><span class="dv" id="vsAv">14</span></div>
+        <div class="dial"><label>coffees</label><input type="range" id="vsB" min="0" max="30" step="1" value="9"><span class="dv" id="vsBv">9</span></div>
+        <div class="dial"><label>samosas</label><input type="range" id="vsC" min="0" max="30" step="1" value="22"><span class="dv" id="vsCv">22</span></div>
+        <div class="dial"><label>sandwiches</label><input type="range" id="vsD" min="0" max="30" step="1" value="5"><span class="dv" id="vsDv">5</span></div>
+        <div class="btnrow">
+          <button class="btn ghost" id="vsSix">× 6 &nbsp;(six identical stalls)</button>
+          <button class="btn ghost" id="vsBack">back to one stall</button>
+        </div>
+      </div>
+      <div>
+        <div class="stagecard" style="text-align:center;padding:16px 10px">
+          <div class="mxscroll" id="vsMx"></div>
+          <div style="font-family:var(--mono);font-size:13px;color:var(--soft);margin-top:8px" id="vsDim"></div>
+        </div>
+        <div class="console" id="vsOut"></div>
+      </div>
+    </div>
+
+    <div class="stick"><b>Three things worth fixing right now.</b> &nbsp;① The <b>dimension</b> is just how many slots — nothing to do with how big the numbers are. &nbsp;② Two vectors are equal only if <em>every</em> slot matches, so <span class="eq">(3,2)</span> ≠ <span class="eq">(2,3)</span>. &nbsp;③ There is a <b>zero vector</b> — all slots 0 — and adding it changes nothing.</div>
+  </div>
+
+  <!-- ---------------------------------------------------------- 1B add/scale -->
+  <div class="block">
+    <h3>Two moves, and only two: add and scale</h3>
+    <p style="margin-top:0">Everything in this entire subject is built from exactly two operations. Both are things you already do without thinking.</p>
+    <div class="grid2" style="gap:16px">
+      <div class="note" style="margin:0"><b>Add</b> — Ravi buys <span class="eq">(2 rice, 1 dal, 3 milk)</span>, Meera buys <span class="eq">(1, 2, 0)</span>. Together the kitchen got <span class="eq">(3, 3, 3)</span>. Rice with rice, dal with dal. <b>Slot by slot.</b></div>
+      <div class="note" style="margin:0;--acc:var(--amber)"><b>Scale</b> — a recipe for 4 people is <span class="eq">(2, 1, 3)</span>. Cooking for 8? Double <em>everything</em>: <span class="eq">(4, 2, 6)</span>. <b>One number multiplies every slot.</b></div>
+    </div>
+
+    <h4>see it as a walk</h4>
+    <p style="margin-top:2px">With two slots you can draw a vector: <span class="eq">(3, 1)</span> means "3 steps right, 1 step up". Adding = walk one, then the other. Scaling = same road, different distance.</p>
+    <div class="grid2">
+      <div>
+        <div class="dial"><label><b style="color:var(--sky)">u</b> — right</label><input type="range" id="vaU1" min="-4" max="5" step="1" value="3"><span class="dv" id="vaU1v">3</span></div>
+        <div class="dial"><label><b style="color:var(--sky)">u</b> — up</label><input type="range" id="vaU2" min="-4" max="5" step="1" value="1"><span class="dv" id="vaU2v">1</span></div>
+        <div class="dial"><label><b style="color:var(--green)">v</b> — right</label><input type="range" id="vaV1" min="-4" max="5" step="1" value="1"><span class="dv" id="vaV1v">1</span></div>
+        <div class="dial"><label><b style="color:var(--green)">v</b> — up</label><input type="range" id="vaV2" min="-4" max="5" step="1" value="2"><span class="dv" id="vaV2v">2</span></div>
+        <div class="dial" style="--acc:var(--rose)"><label>scale <b style="color:var(--sky)">u</b> by λ</label><input type="range" id="vaL" min="-2" max="2.5" step="0.5" value="1"><span class="dv" id="vaLv">1</span></div>
+        <div class="console" id="vaOut"></div>
+      </div>
+      <div class="stagecard"><canvas id="vaCv" width="560" height="480"></canvas></div>
+    </div>
+    <div class="note"><b>Closure — the quiet superpower.</b> Add two lists of three numbers and you get a list of three numbers. Scale one and you still get a list of three numbers. You can never escape. A set with that guarantee is called a <b>vector space</b>, and it is the floor everything else stands on.</div>
+    <div class="stick"><b>Try to break it:</b> can you add <span class="eq">(1, 2, 3)</span> to <span class="eq">(4, 5)</span>? No — there is no third number for the 3 to pair with. "Shapes do not match" is the most common error message in all of data science, and it starts right here.</div>
+  </div>
+
+  <!-- ---------------------------------------------------------- 1C matrix -->
+  <div class="block">
+    <h3>Stack the lists and you get a matrix</h3>
+    <p style="margin-top:0">One student's marks is a vector. Write the whole class down — one student per line, subjects always in the same order — and you have built a table. Mathematics calls that a <b>matrix</b>: <span class="eq"><i>m</i></span> rows tall, <span class="eq"><i>n</i></span> columns wide.</p>
+    <p><b>Tap any number below</b> to see how it is addressed.</p>
+    <div class="grid2">
+      <div>
+        <div class="mxscroll"><table class="dtab" id="mxTab"></table></div>
+        <div class="btnrow">
+          <button class="btn tab active" id="mxRow">read it as rows</button>
+          <button class="btn tab" id="mxCol">read it as columns</button>
+        </div>
+      </div>
+      <div>
+        <div class="namebox" id="mxSay">Tap a cell.</div>
+        <div class="console" id="mxOut"></div>
+      </div>
+    </div>
+    <div class="note"><b>Row first, column second — always.</b> <span class="eq"><i>a</i><sub>23</sub></span> is row 2, column 3. It is never the other way round, in any book or any library. Same habit as a flat's address: the floor, then the flat on that floor.</div>
+    <div class="stick"><b>And vectors are matrices too.</b> A single column of <span class="eq"><i>m</i></span> numbers is an <span class="eq"><i>m</i> × 1</span> matrix; a single row of <span class="eq"><i>n</i></span> numbers is <span class="eq">1 × <i>n</i></span>. So a vector isn't a new species — it's a very thin matrix, and every rule below applies to both.</div>
+  </div>
+
+  <!-- ---------------------------------------------------------- 1D photo -->
+  <div class="block">
+    <h3>Surprise: a photograph <em>is</em> a matrix</h3>
+    <p style="margin-top:0">A black-and-white picture is a grid of tiny squares, and each square holds one number saying how dark it is. That grid <em>is</em> a matrix — nobody had to convert anything.</p>
+    <p><b>Draw on the left</b> (tap or drag). The numbers on the right are what the computer actually stores.</p>
+    <div class="pxwrap">
+      <div>
+        <div class="pxgrid" id="pxG"></div>
+        <div class="btnrow">
+          <button class="btn ghost" id="pxClear">clear</button>
+          <button class="btn ghost" id="pxSeven">draw a 7</button>
+        </div>
+      </div>
+      <div style="flex:1;min-width:220px">
+        <div class="numgrid" id="pxN"></div>
+        <div class="console" id="pxOut" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div class="note"><b>Scale it up.</b> A colour photo from your phone is three of these stacked — one grid for red, one for green, one for blue — each about twelve million numbers. When people say image processing is "just linear algebra", they mean it literally.</div>
+  </div>
+
+  <!-- ---------------------------------------------------------- 1E data -->
+  <div class="block">
+    <h3>What people actually mean by "data"</h3>
+    <p style="margin-top:0">The word gets thrown around loosely. Here it means one very simple thing — and the only real difficulty is that every textbook uses different words for the same three parts.</p>
+    <p>Four second-hand scooters. Three things you measured, plus the price each one fetched. <b>Tap a row, a column, or a price.</b></p>
+    <div class="grid2">
+      <div><div class="mxscroll"><table class="dtab" id="dsTab"></table></div></div>
+      <div>
+        <div class="namebox" id="dsSay">Tap any part of the table and I'll tell you every name it goes by.</div>
+      </div>
+    </div>
+
+    <h4>when a column holds words, not numbers</h4>
+    <p style="margin-top:2px">Matrices hold numbers only. So "Delhi", "yes" and "14 March" have to be converted first. Choose below and watch the row that actually reaches the model:</p>
+    <div class="btnrow">
+      <label style="font-weight:700;font-size:14.5px">city</label>
+      <select class="sel" id="ohCity"><option>Delhi</option><option>Mumbai</option><option>Pune</option></select>
+      <label style="font-weight:700;font-size:14.5px">insured</label>
+      <select class="sel" id="ohIns"><option>yes</option><option>no</option></select>
+    </div>
+    <div class="dial"><label>age (years)</label><input type="range" id="ohAge" min="0" max="12" step="1" value="2"><span class="dv" id="ohAgev">2</span></div>
+    <div class="eqcard" style="text-align:left"><div class="mxscroll" id="ohOut"></div></div>
+    <div class="stick"><b>Never number your categories 1, 2, 3.</b> Writing Delhi = 1, Mumbai = 2, Pune = 3 in one column would claim Pune is three times Delhi and Mumbai sits halfway between them. Neither means anything. Cities have no order, so each gets its own 0/1 column — that's called <b>one-hot encoding</b>, because exactly one is hot per row. Sizes small/medium/large <em>do</em> have an order, so there 1/2/3 is fine.</div>
+  </div>
+
+  <!-- ---------------------------------------------------------- 1F Xw -->
+  <div class="block">
+    <h3>Why all of this exists: <span class="eq"><i>X</i><b>w</b></span></h3>
+    <p style="margin-top:0">Here is the pay-off, and it is the sentence the whole page is heading towards. Your data is a matrix <span class="eq"><i>X</i></span>. The thing a model must learn is a vector of <b>weights</b> <span class="eq"><b>w</b></span> — how much each column matters. And the model's guess for <em>every single row at once</em> is one multiplication: <span class="eq"><i>X</i><b>w</b></span>.</p>
+    <p>Four flats. You know their real rents. You do <b>not</b> know the two weights. Drag them until the blue bars land on the purple ticks.</p>
+    <div class="grid2">
+      <div>
+        <div class="dial"><label>w₁ · per 100 sq ft</label><input type="range" id="pwW1" min="0" max="6" step="0.1" value="1"><span class="dv" id="pwW1v">1</span></div>
+        <div class="dial"><label>w₂ · per bedroom</label><input type="range" id="pwW2" min="-2" max="5" step="0.1" value="1"><span class="dv" id="pwW2v">1</span></div>
+        <div class="btnrow">
+          <button class="btn ghost" id="pwReset">reset</button>
+          <button class="btn" id="pwBest">show the best fit</button>
+        </div>
+        <div class="console" id="pwOut"></div>
+      </div>
+      <div>
+        <div class="predrow"><span class="plab"><span class="lamp idle" id="pwL0"></span> Flat A · 800 sq ft, 2 bed</span><div class="ptrack"><div class="pfill" id="pwF0"></div><div class="ptruth" id="pwT0"></div></div><span class="pnum" id="pwN0"></span></div>
+        <div class="predrow"><span class="plab"><span class="lamp idle" id="pwL1"></span> Flat B · 1000 sq ft, 4 bed</span><div class="ptrack"><div class="pfill" id="pwF1"></div><div class="ptruth" id="pwT1"></div></div><span class="pnum" id="pwN1"></span></div>
+        <div class="predrow"><span class="plab"><span class="lamp idle" id="pwL2"></span> Flat C · 1200 sq ft, 3 bed</span><div class="ptrack"><div class="pfill" id="pwF2"></div><div class="ptruth" id="pwT2"></div></div><span class="pnum" id="pwN2"></span></div>
+        <div class="predrow"><span class="plab"><span class="lamp idle" id="pwL3"></span> Flat D · 600 sq ft, 2 bed</span><div class="ptrack"><div class="pfill" id="pwF3"></div><div class="ptruth" id="pwT3"></div></div><span class="pnum" id="pwN3"></span></div>
+        <div class="note" style="margin-top:14px;--acc:var(--violet)">Purple tick = the rent that flat really fetched. Blue bar = what your weights predict.</div>
+      </div>
+    </div>
+    <div class="stick"><b>Notice what just happened.</b> With flats A and B alone, two dials can hit both ticks exactly — two clues, two unknowns. Add C and D and <em>no</em> setting hits all four. Four clues, two dials: too much to ask. That is not a bug, it's the normal state of real data, and the fix has a name — <b>linear regression</b>, which looks for the weights that miss by the least. Everything after this page is the machinery for that.</div>
+    <div class="note"><b>And this is why the rest of the lecture matters.</b> Once the question is "which <span class="eq"><b>w</b></span> satisfies these clues?", you need a reliable way to solve clues. That is exactly what Parts 2 to 6 build.</div>
+  </div>
+</section>
+
+<!-- ================================================================ PART 1 -->
+<section class="part" id="p1" style="--acc:var(--indigo)">
+  <div class="parthead">
+    <span class="badge">PART 2</span>
+    <h2>The puzzle</h2>
+    <div class="why">What counts as a clue, a real factory story, and the three possible endings.</div>
+  </div>
+
+  <div class="block">
+    <h3>What you just did, in official words</h3>
+    <p style="margin-top:0">Each lamp was a <b>linear equation</b>: a clue where the hidden numbers are only <span class="hl">multiplied by known numbers and added up</span>. Making <em>all</em> lamps green at once means solving the <b>system</b>. You found <span class="eq"><i>x</i>=3, <i>y</i>=2</span> — the one dial setting both clues accept.</p>
+    <p>What keeps a clue "linear"? The hidden numbers stay gentle — no squaring them, no multiplying them together:</p>
+    <div class="btnrow">
+      <span class="tag" style="border-color:var(--green);color:var(--green)">✓ 3<i class="v">x</i> + 2<i class="v">y</i> = 7</span>
+      <span class="tag" style="border-color:var(--green);color:var(--green)">✓ <i class="v">x</i> − 4<i class="v">y</i> + <i class="v">z</i> = 0</span>
+      <span class="tag" style="border-color:var(--rose);color:var(--rose)">✗ <i class="v">x</i><sup>2</sup> + <i class="v">y</i> = 7</span>
+      <span class="tag" style="border-color:var(--rose);color:var(--rose)">✗ <i class="v">x</i>·<i class="v">y</i> = 3</span>
+    </div>
+    <div class="note"><b>Why care?</b> In machine learning, every row of a dataset is one linear clue about a model's hidden weights. Solving clues = fitting models. Same game, bigger dials.</div>
+  </div>
+
+  <div class="block">
+    <h3>The slides' story: a furniture factory</h3>
+    <p style="margin-top:0">A factory makes <b>chair kits</b>, <b>table kits</b> and <b>cabinet kits</b>. Kits eat supplies, and the boss wants the storeroom <span class="hl">exactly empty</span> at the end. The slide's table — each supply row is one clue:</p>
+    <div class="grid2">
+      <div>
+        <div class="dial"><label>chairs <span class="eq"><i>x</i><sub>1</sub></span></label><input type="range" id="fc1" min="0" max="5" step="1" value="1"><span class="dv" id="fc1v">1</span></div>
+        <div class="dial"><label>tables <span class="eq"><i>x</i><sub>2</sub></span></label><input type="range" id="fc2" min="0" max="5" step="1" value="1"><span class="dv" id="fc2v">1</span></div>
+        <div class="dial"><label>cabinets <span class="eq"><i>x</i><sub>3</sub></span></label><input type="range" id="fc3" min="0" max="5" step="1" value="1"><span class="dv" id="fc3v">1</span></div>
+        <div class="btnrow">
+          <button class="btn ghost" id="fcReset">reset</button>
+          <button class="btn" id="fcSolve">show the answer</button>
+        </div>
+        <div class="console" id="fcOut"></div>
+      </div>
+      <div>
+        <div class="meter"><span class="mlab"><span class="lamp idle" id="mlWood"></span> wood</span><div class="mtrack"><div class="mfill" id="mfWood"></div></div><span class="mnum" id="mnWood"></span></div>
+        <div class="eqcard" style="text-align:left;font-size:.95em;margin:6px 0"><span class="eq">1<i>x</i><sub>1</sub> + 2<i>x</i><sub>2</sub> + 1<i>x</i><sub>3</sub> = 9</span></div>
+        <div class="meter"><span class="mlab"><span class="lamp idle" id="mlLab"></span> labour</span><div class="mtrack"><div class="mfill" id="mfLab"></div></div><span class="mnum" id="mnLab"></span></div>
+        <div class="eqcard" style="text-align:left;font-size:.95em;margin:6px 0"><span class="eq">2<i>x</i><sub>1</sub> + 1<i>x</i><sub>2</sub> + 1<i>x</i><sub>3</sub> = 8</span></div>
+        <div class="meter"><span class="mlab"><span class="lamp idle" id="mlMach"></span> machine</span><div class="mtrack"><div class="mfill" id="mfMach"></div></div><span class="mnum" id="mnMach"></span></div>
+        <div class="eqcard" style="text-align:left;font-size:.95em;margin:6px 0"><span class="eq">1<i>x</i><sub>1</sub> + 1<i>x</i><sub>2</sub> + 2<i>x</i><sub>3</sub> = 7</span></div>
+        <div class="meter"><span class="mlab"><span class="lamp idle" id="mlShip"></span> shipping</span><div class="mtrack"><div class="mfill" id="mfShip"></div></div><span class="mnum" id="mnShip"></span></div>
+        <div class="eqcard" style="text-align:left;font-size:.95em;margin:6px 0"><span class="eq">3<i>x</i><sub>1</sub> + 1<i>x</i><sub>2</sub> + 2<i>x</i><sub>3</sub> = 11</span></div>
+      </div>
+    </div>
+    <p class="stick"><b>Notice how strict it is.</b> Four lamps, three dials. Find the plan that satisfies <em>all four bosses at once</em> — then nudge any dial by one and watch the harmony shatter.</p>
+  </div>
+
+  <div class="block">
+    <h3>The three possible endings</h3>
+    <p style="margin-top:0">Every system of linear clues ends one of exactly <b>three</b> ways. Never two answers. Never five. Watch it happen with the slides' own example.</p>
+    <p>Start with two fixed clues about three hidden numbers:</p>
+    <div class="eqcard"><div class="eqrow">
+      <span class="eq"><i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> + <i>x</i><sub>3</sub> = 3</span>
+      <span class="eq"><i>x</i><sub>1</sub> − <i>x</i><sub>2</sub> + 2<i>x</i><sub>3</sub> = 2</span>
+    </div></div>
+    <p>Here's the secret: add these two clues together. The <span class="eq"><i>x</i><sub>2</sub></span> parts cancel (+1 and −1), leaving a <b>forced fact</b> the pair quietly guarantees:</p>
+    <div class="eqcard" style="border-left-color:var(--amber)"><span class="eq">2<i>x</i><sub>1</sub> + 3<i>x</i><sub>3</sub> = <b>5</b></span> &nbsp;<span style="color:var(--soft);font-size:.85em">(forced — no choice about it)</span></div>
+    <p>Now <b>you</b> write clue 3. It has the shape <span class="eq">2<i>x</i><sub>1</sub> + 3<i>x</i><sub>3</sub> = <i>c</i></span>. Drag <span class="eq"><i>c</i></span>:</p>
+    <div class="dial"><label>clue-3 demand <span class="eq"><i>c</i></span></label><input type="range" id="fateC" min="-1" max="7" step="0.5" value="1"><span class="dv" id="fateCv">1</span></div>
+    <div class="console" id="fateOut"></div>
+    <div class="grid3" style="margin-top:16px">
+      <div class="qcard" style="margin:0"><b><span class="verdict v0">0 answers</span></b><p style="font-size:14.5px;color:var(--soft);margin:8px 0 0">Clue 3 <b>fights</b> the forced fact (<span class="eq"><i>c</i> ≠ 5</span>). The slides' example uses <span class="eq"><i>c</i> = 1</span>: nothing can equal 5 and 1 at once. Dead end.</p></div>
+      <div class="qcard" style="margin:0"><b><span class="verdict vinf">∞ answers</span></b><p style="font-size:14.5px;color:var(--soft);margin:8px 0 0">Clue 3 is an <b>echo</b> (<span class="eq"><i>c</i> = 5</span>) — it repeats what clues 1+2 already said. Nothing new is pinned. A free choice survives.</p></div>
+      <div class="qcard" style="margin:0"><b><span class="verdict v1">1 answer</span></b><p style="font-size:14.5px;color:var(--soft);margin:8px 0 0">Clue 3 says something genuinely <b>new</b>. The slides use <span class="eq"><i>x</i><sub>2</sub> + <i>x</i><sub>3</sub> = 2</span>, which pins everything: <span class="eq"><i>x</i><sub>1</sub>=<i>x</i><sub>2</sub>=<i>x</i><sub>3</sub>=1</span>.</p></div>
+    </div>
+
+    <h4>When the answers are endless, you get a free dial</h4>
+    <p style="margin-top:4px">With the echo clue, one hidden number becomes <b>your choice</b>. Pick <span class="eq"><i>x</i><sub>3</sub></span> — the other two lock in automatically (<span class="eq"><i>x</i><sub>1</sub> = 2.5 − 1.5<i>x</i><sub>3</sub></span> and <span class="eq"><i>x</i><sub>2</sub> = 0.5 + 0.5<i>x</i><sub>3</sub></span>). Every position of this dial is a full, genuine solution:</p>
+    <div class="dial"><label>free dial <span class="eq"><i>x</i><sub>3</sub></span></label><input type="range" id="fd3" min="-2" max="4" step="0.5" value="1"><span class="dv" id="fd3v">1</span></div>
+    <div class="cluerow"><span class="lamp idle" id="fdL1"></span><span class="eq"><i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> + <i>x</i><sub>3</sub> = 3</span><span class="cstat" id="fdS1"></span></div>
+    <div class="cluerow"><span class="lamp idle" id="fdL2"></span><span class="eq"><i>x</i><sub>1</sub> − <i>x</i><sub>2</sub> + 2<i>x</i><sub>3</sub> = 2</span><span class="cstat" id="fdS2"></span></div>
+    <div class="cluerow"><span class="lamp idle" id="fdL3"></span><span class="eq">2<i>x</i><sub>1</sub> + 3<i>x</i><sub>3</sub> = 5</span><span class="cstat" id="fdS3"></span></div>
+    <div class="note"><b>Name to remember:</b> the locked numbers are <b>pivot variables</b>; the free one is a <b>free variable</b>. Part 5 shows how to spot them instantly. And why never exactly 2 answers? Two working dial settings always let you slide smoothly between them, and <em>everything in between works too</em> — so 2 instantly becomes infinity.</div>
+  </div>
+</section>
+<!-- ================================================================ PART 2 -->
+<section class="part" id="p2" style="--acc:var(--teal)">
+  <div class="parthead">
+    <span class="badge">PART 3</span>
+    <h2>The picture</h2>
+    <div class="why">Clues become lines. Lines become walls. The three endings become things you can literally see.</div>
+  </div>
+
+  <div class="block">
+    <h3>Scroll slowly — the picture builds itself</h3>
+    <div class="scrolly" id="scrollyLines">
+      <div class="steps">
+        <div class="step" data-scene="0">
+          <b>One clue = a crowd of suspects.</b>
+          <p style="margin-bottom:0">Take clue 1 from your warm-up: <span class="eq"><i>x</i> + <i>y</i> = 5</span>. Lots of pairs keep its lamp green — <span class="eq">(0,5)</span>, <span class="eq">(1,4)</span>, <span class="eq">(2.5, 2.5)</span>, even <span class="eq">(7,−2)</span>. Watch them land on the stage… they aren't scattered. <span class="hl">They line up.</span> Every linear clue draws a perfectly straight <b>line</b>.</p>
+        </div>
+        <div class="step" data-scene="1">
+          <b>The second clue draws its own line.</b>
+          <p style="margin-bottom:0"><span class="eq"><i>x</i> − <i>y</i> = 1</span> has its own crowd of suspects, its own line, its own tilt. Two clues, two lines — and the hidden numbers must please <em>both</em>.</p>
+        </div>
+        <div class="step" data-scene="2">
+          <b>The solution is the crossing.</b>
+          <p style="margin-bottom:0">A point on line 1 keeps lamp 1 green. A point on line 2 keeps lamp 2 green. So the answer must sit on <b>both lines at once</b> — the crossing point. There it is: <span class="hlg"><b>(3, 2)</b></span>, exactly what your dials found in Part 0. <b>One crossing = one answer.</b></p>
+        </div>
+        <div class="step" data-scene="3">
+          <b>Ending "0", drawn.</b>
+          <p style="margin-bottom:0">Change clue 2 to <span class="eq"><i>x</i> + <i>y</i> = 2</span>. Same tilt as clue 1, different demand — the lines run <b>parallel</b> and never touch. No point pleases both. <span class="hlr">No solution.</span></p>
+        </div>
+        <div class="step" data-scene="4">
+          <b>Ending "∞", drawn.</b>
+          <p style="margin-bottom:0">Now make clue 2 an echo: <span class="eq">2<i>x</i> + 2<i>y</i> = 10</span> — clue 1 shouted twice. It draws the <b>same line</b>. Every single point on it pleases both clues. <span class="hl">Endless solutions.</span> Crossing, parallel, same-line: the three endings are three pictures.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stagecard">
+          <canvas id="lineStage" width="560" height="470"></canvas>
+          <div class="console" id="lineOut" style="margin-top:8px">scroll the story on the left</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Your turn: steer clue 2</h3>
+    <p style="margin-top:0">Clue 1 is fixed: <span class="eq"><i>x</i> + <i>y</i> = 5</span> (teal line). You control clue 2: <span class="eq"><i>a</i>·<i>x</i> + <i>b</i>·<i>y</i> = <i>c</i></span>. Try to produce all three endings yourself — the verdict follows your dials.</p>
+    <div class="grid2">
+      <div>
+        <div class="dial"><label><span class="eq"><i>a</i></span></label><input type="range" id="stA" min="-3" max="3" step="0.5" value="1"><span class="dv" id="stAv">1</span></div>
+        <div class="dial"><label><span class="eq"><i>b</i></span></label><input type="range" id="stB" min="-3" max="3" step="0.5" value="-1"><span class="dv" id="stBv">-1</span></div>
+        <div class="dial"><label><span class="eq"><i>c</i></span></label><input type="range" id="stC" min="-6" max="6" step="0.5" value="1"><span class="dv" id="stCv">1</span></div>
+        <div class="btnrow">
+          <button class="btn tab" id="stGo1">make it cross</button>
+          <button class="btn tab" id="stGo0">make it parallel</button>
+          <button class="btn tab" id="stGoInf">make it an echo</button>
+        </div>
+        <div class="console" id="stOut"></div>
+      </div>
+      <div class="stagecard"><canvas id="steerCanvas" width="520" height="430"></canvas></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Three hidden numbers? Clues become walls</h3>
+    <p style="margin-top:0">With three unknowns, one clue like <span class="eq"><i>x</i><sub>1</sub> + <i>x</i><sub>2</sub> + <i>x</i><sub>3</sub> = 3</span> is kept green by a whole flat sheet of points — a <b>wall</b> floating in space (the official word: a <em>plane</em>). Two walls that aren't parallel meet along a <b>line</b>, like a wall meeting the floor. Then the third wall decides the ending.</p>
+    <p><b>Drag the scene to spin it.</b> It also rotates gently on its own. Try all four cases — the sneaky one is the <b>prism</b>: every <em>pair</em> of walls meets, yet no point is on all three.</p>
+    <div class="btnrow">
+      <button class="btn tab active" id="w3Point">✂ cut at one point → 1</button>
+      <button class="btn tab" id="w3Spine">📖 share a spine → ∞</button>
+      <button class="btn tab" id="w3Prism">⛺ the prism trap → 0</button>
+      <button class="btn tab" id="w3Par">∥ parallel walls → 0</button>
+    </div>
+    <div class="stagecard"><canvas id="wallsCanvas" width="1000" height="470" style="width:100%;height:auto;touch-action:none;cursor:grab"></canvas></div>
+    <div class="console" id="wallsOut"></div>
+    <div class="note"><b>Why this matters for ML:</b> a model with 3 weights lives in exactly this room — every data point is one wall. A million weights? Same story in a space we can't draw, and that's fine: from here on, the algebra will carry the picture for us.</div>
+  </div>
+</section>
+<!-- ================================================================ PART 3 -->
+<section class="part" id="p3" style="--acc:var(--amber)">
+  <div class="parthead">
+    <span class="badge">PART 4</span>
+    <h2>The toolbox</h2>
+    <div class="why">To solve big systems we need better notation. Meet the matrix — and the five moves you can do with it.</div>
+  </div>
+
+  <div class="block">
+    <h3>A matrix is a packed table</h3>
+    <p style="margin-top:0">Look at the factory table again. The <em>words</em> around it are decoration — the information is the grid of numbers. Strip the labels, keep the grid, add brackets: that's a <b>matrix</b>. Press the button and watch the packing happen.</p>
+    <div class="btnrow">
+      <button class="btn primary" id="packBtn">📦 pack the table</button>
+      <button class="btn ghost" id="packBack">unpack</button>
+      <span id="packMsg" style="font-size:14px;color:var(--soft)"></span>
+    </div>
+    <div class="stagecard" style="padding:16px;overflow-x:auto;-webkit-overflow-scrolling:touch"><div id="packStage" style="position:relative;height:230px;min-width:520px"></div></div>
+    <p>Grammar of the grid: a matrix with <span class="eq"><i>m</i></span> rows and <span class="eq"><i>n</i></span> columns is "<span class="eq"><i>m</i>×<i>n</i></span>" (rows first, always). The cell in row <span class="eq"><i>i</i></span>, column <span class="eq"><i>j</i></span> is called <span class="eq"><i>a</i><sub>ij</sub></span> — <b>click any cell above</b> (after packing) to read its address. Thin special cases: one row = a <b>row vector</b>; one column = a <b>column vector</b>. So vectors are just skinny matrices, and a plain list of numbers like our dial settings <span class="eq">(2, 3, 1)</span> is a vector too.</p>
+    <div class="note"><b>Vectors have a superpower called closure:</b> add two of them, or stretch one by a number, and you get another vector — you never leave the club. A club like that is called a <b>vector space</b>. Even polynomials join: adding <span class="eq">(2+<i>x</i>) + (1+3<i>x</i>) = 3+4<i>x</i></span> is exactly adding the lists <span class="eq">(2,1)+(1,3)=(3,4)</span>. Same move, different costume.</div>
+  </div>
+
+  <div class="block">
+    <h3>Easy moves: add cell-by-cell, scale every cell</h3>
+    <p style="margin-top:0">Adding matrices and scaling matrices work exactly as you'd hope. Same-shaped grids add <b>matching cells</b>; a number <span class="eq"><i>λ</i></span> (lambda) multiplies <b>every cell</b>. <b>Hover the result</b> to see each cell's two parents; drag <span class="eq"><i>λ</i></span> to scale live.</p>
+    <div id="easyHost" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;margin:14px 0"></div>
+    <div class="dial"><label>scale <span class="eq"><i>λ</i></span></label><input type="range" id="easyL" min="-2" max="3" step="0.5" value="3"><span class="dv" id="easyLv">3</span></div>
+    <div class="console" id="easyOut"></div>
+    <div class="note"><b>ML in one line:</b> a training update is literally <em>new weights = old weights + (−η) × gradient</em> — one matrix add, one matrix scale, repeated millions of times.</div>
+  </div>
+
+  <div class="block">
+    <h3>The big move: multiply — a row dances with a column</h3>
+    <p style="margin-top:0">This is the one operation that is <b>not</b> cell-by-cell, and it runs all of modern ML. To fill one cell of <span class="eq"><i>C</i> = <i>A</i>·<i>B</i></span>: take a <span style="color:var(--violet);font-weight:800">row of A</span> and a <span style="color:var(--teal);font-weight:800">column of B</span>, multiply them pair by pair, add it all up. Like a bill: quantities × prices, summed.</p>
+    <div class="btnrow">
+      <button class="btn primary" id="mmPlay">▶ watch the dance</button>
+      <button class="btn" id="mmStep">step one cell</button>
+      <button class="btn ghost" id="mmReset">reset</button>
+      <button class="btn tab" id="mmOrder">flip the order → B·A</button>
+    </div>
+    <div id="mmHost" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;margin:14px 0"></div>
+    <div class="console" id="mmOut"></div>
+    <h4>shapes must shake hands</h4>
+    <p style="margin-top:4px">The dance only works if the row of <span class="eq"><i>A</i></span> and the column of <span class="eq"><i>B</i></span> have the <b>same length</b>. <span class="eq"><i>A</i></span> is <span class="eq"><i>m</i>×<i>k</i></span> and <span class="eq"><i>B</i></span> is <span class="eq"><i>k</i>×<i>n</i></span> → the inner numbers must match, and the answer is <span class="eq"><i>m</i>×<i>n</i></span>:</p>
+    <div class="btnrow">
+      <label style="font-weight:700;font-size:14px">A: <select class="sel" id="shA"><option>2×3</option><option>3×3</option><option>1×4</option><option selected>2×2</option></select></label>
+      <label style="font-weight:700;font-size:14px">B: <select class="sel" id="shB"><option>3×2</option><option selected>2×2</option><option>4×1</option><option>3×4</option></select></label>
+      <span id="shOut" style="font-family:var(--mono);font-size:14px;font-weight:700"></span>
+    </div>
+    <div class="stick"><b>Order matters!</b> Even when both exist, <span class="eq"><i>A</i>·<i>B</i> ≠ <i>B</i>·<i>A</i></span> — press "flip the order" above and compare the finished grids. Matrix land has no "swap freely" rule.</div>
+  </div>
+
+  <div class="block">
+    <h3>Rules that survive (audit them yourself)</h3>
+    <p style="margin-top:0">Three comfy rules from ordinary arithmetic still hold — and one breaks. Don't take my word for it: roll random matrices and check with real numbers.</p>
+    <div class="btnrow"><button class="btn primary" id="ruRoll">🎲 roll & audit</button></div>
+    <div class="console" id="ruOut"></div>
+    <p style="margin-bottom:0;font-size:15.5px;color:var(--soft)">The do-nothing matrix <span class="eq"><i>I</i></span> (ones on the diagonal, zeros elsewhere) plays the role of the number 1 — multiplying by it changes nothing. Remember it: it stars in Part 4's finale.</p>
+  </div>
+
+  <div class="block">
+    <h3>The undo button — and how it breaks</h3>
+    <p style="margin-top:0">A square matrix <span class="eq"><i>A</i></span> <em>transforms</em> lists of numbers. Its <b>inverse</b> <span class="eq"><i>A</i><sup>−1</sup></span> is the matrix that <span class="hl">undoes</span> it: apply <span class="eq"><i>A</i></span>, then <span class="eq"><i>A</i><sup>−1</sup></span>, and you're back where you started. Watch it on a crowd of points — then break it.</p>
+    <div class="grid2">
+      <div>
+        <div class="dial"><label><span class="eq"><i>a</i><sub>11</sub></span></label><input type="range" id="ivA" min="-2" max="3" step="0.1" value="2"><span class="dv" id="ivAv">2</span></div>
+        <div class="dial"><label><span class="eq"><i>a</i><sub>12</sub></span></label><input type="range" id="ivB" min="-2" max="3" step="0.1" value="1"><span class="dv" id="ivBv">1</span></div>
+        <div class="dial"><label><span class="eq"><i>a</i><sub>21</sub></span></label><input type="range" id="ivC" min="-2" max="3" step="0.1" value="1"><span class="dv" id="ivCv">1</span></div>
+        <div class="dial"><label><span class="eq"><i>a</i><sub>22</sub></span></label><input type="range" id="ivD" min="-2" max="3" step="0.1" value="1"><span class="dv" id="ivDv">1</span></div>
+        <div class="btnrow">
+          <button class="btn primary" id="ivGo">apply A</button>
+          <button class="btn" id="ivUndo">apply A<sup>−1</sup> (undo)</button>
+          <button class="btn ghost" id="ivHome">reset points</button>
+        </div>
+        <div class="btnrow">
+          <button class="btn tab" id="ivNice">healthy preset</button>
+          <button class="btn tab" id="ivSing">broken preset (rows are copies)</button>
+        </div>
+        <div class="console" id="ivOut"></div>
+      </div>
+      <div class="stagecard"><canvas id="ivCanvas" width="520" height="440"></canvas></div>
+    </div>
+    <p>Where does the undo come from? For 2×2 the slides build it by hand — swap the diagonal, flip the signs of the other two, then divide by one special number:</p>
+    <div class="eqcard"><span class="eq"><i>A</i><sup>−1</sup> = <span style="display:inline-block;text-align:center;vertical-align:middle;line-height:1.15"><span style="display:block;border-bottom:2px solid var(--ink);padding:0 6px">1</span><span style="display:block;padding:0 6px"><i>a</i><sub>11</sub><i>a</i><sub>22</sub> − <i>a</i><sub>12</sub><i>a</i><sub>21</sub></span></span> ×</span><span class="mx"><table><tr><td class="eq"><i>a</i><sub>22</sub></td><td class="eq">−<i>a</i><sub>12</sub></td></tr><tr><td class="eq">−<i>a</i><sub>21</sub></td><td class="eq"><i>a</i><sub>11</sub></td></tr></table></span></div>
+    <p>That bottom number, <span class="eq"><i>a</i><sub>11</sub><i>a</i><sub>22</sub> − <i>a</i><sub>12</sub><i>a</i><sub>21</sub></span>, is the <b>determinant</b>, <span class="eq">det <i>A</i></span> — the gatekeeper. Dividing by zero is forbidden, so: <span class="hl"><b>the undo button exists exactly when det ≠ 0</b></span>. And the broken preset shows <em>why</em>, not just <em>that</em>: a zero-det matrix squashes different points onto the same spot. Once two points overlap, no machine on earth can tell them apart again. Information lost = no undo. (Official name for such a matrix: <b>singular</b>.)</p>
+    <div class="stick"><b>Two rules to file away (slide 25):</b> undoing a chain reverses it, <span class="eq">(<i>A</i><i>B</i>)<sup>−1</sup> = <i>B</i><sup>−1</sup><i>A</i><sup>−1</sup></span> — socks on then shoes on; undo = shoes off <em>first</em>. And there's no shortcut for sums: <span class="eq">(<i>A</i>+<i>B</i>)<sup>−1</sup></span> is <b>not</b> <span class="eq"><i>A</i><sup>−1</sup>+<i>B</i><sup>−1</sup></span>.</div>
+  </div>
+
+  <div class="block">
+    <h3>The flip (transpose)</h3>
+    <p style="margin-top:0">One last tool, thirty seconds. The <b>transpose</b> <span class="eq"><i>A</i><sup>T</sup></span> flips a matrix over its diagonal — rows become columns, so a 2×3 grid becomes 3×2. Press flip. That's genuinely all it is.</p>
+    <div class="btnrow"><button class="btn primary" id="trFlip">⇄ flip</button><button class="btn" id="trAudit">🎲 audit the product rule</button></div>
+    <div class="grid2">
+      <div class="stagecard"><canvas id="trCanvas" width="520" height="270"></canvas></div>
+      <div class="console" id="trOut">Rules: flipping twice returns A. Flips spread over sums. And on a product the order reverses — (A·B)ᵀ = Bᵀ·Aᵀ, socks &amp; shoes again. Press audit to verify with numbers.</div>
+    </div>
+    <div class="note"><b>ML sightings:</b> similarity scores in attention are <span class="eq"><i>Q</i>·<i>K</i><sup>T</sup></span>, and backpropagation sends signals backwards through a layer using <span class="eq"><i>W</i><sup>T</sup></span>. The flip is everywhere.</div>
+  </div>
+</section>
+<!-- ================================================================ PART 4 -->
+<section class="part" id="p4" style="--acc:var(--violet)">
+  <div class="parthead">
+    <span class="badge">PART 5</span>
+    <h2>The method</h2>
+    <div class="why">One tiny equation to hold any system, three safe moves to clean it, one staircase to read every answer off. This is the heart of the lecture.</div>
+  </div>
+
+  <div class="block">
+    <h3>Any system, three symbols: <span class="eq"><i>A</i><b>x</b> = <b>b</b></span></h3>
+    <p style="margin-top:0">Pack the clue-numbers into a matrix <span class="eq"><i>A</i></span>, the dials into a column <span class="eq"><b>x</b></span>, the demands into a column <span class="eq"><b>b</b></span>. The slides' example:</p>
+    <div class="eqcard"><div class="eqrow">
+      <span class="mx"><table><tr><td>2</td><td>3</td><td>5</td></tr><tr><td>4</td><td>−2</td><td>−7</td></tr><tr><td>9</td><td>5</td><td>−3</td></tr></table></span>
+      <span class="mx"><table><tr><td class="eq"><i>x</i><sub>1</sub></td></tr><tr><td class="eq"><i>x</i><sub>2</sub></td></tr><tr><td class="eq"><i>x</i><sub>3</sub></td></tr></table></span>
+      <span class="eq" style="font-size:1.2em">=</span>
+      <span class="mx"><table><tr><td>1</td></tr><tr><td>8</td></tr><tr><td>2</td></tr></table></span>
+      <span class="mxlab">← three clues, one line of math</span>
+    </div></div>
+    <p>Read it by <b>rows</b> and each row of <span class="eq"><i>A</i></span> dances with <span class="eq"><b>x</b></span> to give one clue — that's Part 4's multiply, earning its keep. But there's a second reading, and it's the best idea on the slides.</p>
+    <h4>the column reading: solving = walking</h4>
+    <p style="margin-top:4px">Each dial <span class="eq"><i>x</i><sub>i</sub></span> buys copies of <b>column <span class="eq"><i>i</i></span></b>, and the purchases add up. So <span class="hl">the columns are step-moves, <b>b</b> is a treasure, and solving means choosing how much of each step lands you exactly on the treasure</span>. The slides' 2-clue, 4-dial system: columns <span class="eq">(1,0)</span>, <span class="eq">(0,1)</span>, <span class="eq">(8,2)</span>, <span class="eq">(−4,12)</span>, treasure <span class="eq">(42, 8)</span>. Walk it:</p>
+    <div class="grid2">
+      <div>
+        <div class="dial"><label><span class="eq"><i>x</i><sub>1</sub></span>×(1,0)</label><input type="range" id="cw1" min="-10" max="60" step="1" value="10"><span class="dv" id="cw1v">10</span></div>
+        <div class="dial"><label><span class="eq"><i>x</i><sub>2</sub></span>×(0,1)</label><input type="range" id="cw2" min="-10" max="30" step="1" value="5"><span class="dv" id="cw2v">5</span></div>
+        <div class="dial"><label><span class="eq"><i>x</i><sub>3</sub></span>×(8,2)</label><input type="range" id="cw3" min="-8" max="8" step="0.5" value="0"><span class="dv" id="cw3v">0</span></div>
+        <div class="dial"><label><span class="eq"><i>x</i><sub>4</sub></span>×(−4,12)</label><input type="range" id="cw4" min="-6" max="6" step="0.5" value="0"><span class="dv" id="cw4v">0</span></div>
+        <div class="btnrow">
+          <button class="btn primary" id="cwLand">land it: (42,8,0,0)</button>
+          <button class="btn" id="cwGhost">✨ ghost move</button>
+          <button class="btn ghost" id="cwReset">reset</button>
+        </div>
+        <div class="console" id="cwOut"></div>
+      </div>
+      <div class="stagecard"><canvas id="cwCanvas" width="540" height="430"></canvas></div>
+    </div>
+    <p class="stick" id="cwStick" style="display:none"><b>Did you see that?!</b> The ghost move spun every dial — <span class="eq">+8, +2, −1, 0</span> — and the walk landed on the <em>same spot</em>. A dial-change that changes nothing is called a <b>silent move</b> (it's a walk that loops back to its start). This is why the treasure has endless recipes.</p>
+  </div>
+
+  <div class="block">
+    <h3>All the answers, one formula</h3>
+    <p style="margin-top:0">The slides' master recipe has two ingredients. <b>One landing</b>: the easy one is <span class="eq">(42, 8, 0, 0)</span> — called a <b>particular solution</b>. <b>All the silent moves</b>: column 3 equals 8-of-column-1 plus 2-of-column-2, so building it one way and unbuilding the other goes nowhere — the move <span class="eq">(8, 2, −1, 0)</span>. Same trick on column 4 gives <span class="eq">(−4, 12, 0, −1)</span>. Now add the landing to <em>any mix</em> of silent moves:</p>
+    <div class="eqcard"><div class="eqrow">
+      <span class="eq"><b>x</b> =</span>
+      <span class="mx"><table><tr><td>42</td></tr><tr><td>8</td></tr><tr><td>0</td></tr><tr><td>0</td></tr></table></span>
+      <span class="eq">+ <i>λ</i><sub>1</sub></span>
+      <span class="mx"><table><tr><td>8</td></tr><tr><td>2</td></tr><tr><td>−1</td></tr><tr><td>0</td></tr></table></span>
+      <span class="eq">+ <i>λ</i><sub>2</sub></span>
+      <span class="mx"><table><tr><td>−4</td></tr><tr><td>12</td></tr><tr><td>0</td></tr><tr><td>−1</td></tr></table></span>
+    </div></div>
+    <p>The dials <span class="eq"><i>λ</i><sub>1</sub>, <i>λ</i><sub>2</sub></span> (lambda) can be <em>any</em> numbers. Prove it to yourself — spin them and watch both clue-lamps refuse to blink:</p>
+    <div class="dial"><label><span class="eq"><i>λ</i><sub>1</sub></span></label><input type="range" id="gl1" min="-3" max="3" step="0.1" value="0"><span class="dv" id="gl1v">0</span></div>
+    <div class="dial"><label><span class="eq"><i>λ</i><sub>2</sub></span></label><input type="range" id="gl2" min="-2" max="2" step="0.1" value="0"><span class="dv" id="gl2v">0</span></div>
+    <div class="cluerow"><span class="lamp idle" id="glL1"></span><span class="eq">clue 1: &nbsp;1<i>x</i><sub>1</sub> + 0<i>x</i><sub>2</sub> + 8<i>x</i><sub>3</sub> − 4<i>x</i><sub>4</sub> = 42</span><span class="cstat" id="glS1"></span></div>
+    <div class="cluerow"><span class="lamp idle" id="glL2"></span><span class="eq">clue 2: &nbsp;0<i>x</i><sub>1</sub> + 1<i>x</i><sub>2</sub> + 2<i>x</i><sub>3</sub> + 12<i>x</i><sub>4</sub> = 8</span><span class="cstat" id="glS2"></span></div>
+    <div class="console" id="glOut"></div>
+  </div>
+
+  <div class="block">
+    <h3>Three moves that never change the answer</h3>
+    <p style="margin-top:0">For messy systems we clean first, solve second. Only three edits are <b>answer-safe</b>: <b>swap</b> two clues (order is decoration), <b>scale</b> a clue by any number except 0 (both sides together — same information, louder voice), and <b>add</b> one clue to another (if both hold, their sum holds; subtract to undo). To edit fast, drop the letters and keep numbers: <span class="eq">[<i>A</i> | <b>b</b>]</span>, the <b>augmented matrix</b>, with the demands after the bar.</p>
+    <p>Watch what the moves do to the picture. A tiny system, <span class="eq"><i>x</i> + 2<i>y</i> = 4</span> and <span class="eq">3<i>x</i> + <i>y</i> = 7</span>, answer <span class="eq">(2, 1)</span>:</p>
+    <div class="btnrow">
+      <button class="btn" id="rmSwap">swap R₁ ↔ R₂</button>
+      <button class="btn" id="rmScale">scale R₂ × 2</button>
+      <button class="btn" id="rmAdd">R₂ ← R₂ − 3R₁</button>
+      <button class="btn" id="rmZero" style="border-color:var(--rose);color:var(--rose);box-shadow:0 2px 0 var(--rose)">forbidden: R₂ × 0</button>
+      <button class="btn ghost" id="rmReset">reset</button>
+    </div>
+    <div class="grid2">
+      <div>
+        <div id="rmHost" style="display:flex;justify-content:center;margin:10px 0"></div>
+        <div class="console" id="rmOut"></div>
+      </div>
+      <div class="stagecard"><canvas id="rmCanvas" width="520" height="380"></canvas></div>
+    </div>
+  </div>
+
+  <div class="block" id="gameBlock">
+    <h3>🎮 The cleaning game: make a staircase</h3>
+    <p style="margin-top:0">Here's the whole method as a puzzle. Using <b>only the three safe moves</b>, sweep this system into a <b>staircase</b>: each row's first non-zero number (its <b>pivot</b>) strictly to the right of the one above, zeros underneath. Once the staircase stands, the bottom clue is tiny and the answers fall out. This is <span class="hl"><b>Gaussian elimination</b></span> — you're about to run it with your own hands.</p>
+    <p style="font-size:15px;color:var(--soft)">The system is slide 10's: <span class="eq"><i>x</i><sub>1</sub>+<i>x</i><sub>2</sub>+<i>x</i><sub>3</sub>=3</span>, &nbsp;<span class="eq"><i>x</i><sub>1</sub>−<i>x</i><sub>2</sub>+2<i>x</i><sub>3</sub>=2</span>, &nbsp;<span class="eq"><i>x</i><sub>2</sub>+<i>x</i><sub>3</sub>=2</span>.</p>
+    <div class="grid2">
+      <div>
+        <div id="gmHost" style="display:flex;justify-content:center;margin:8px 0"></div>
+        <div class="console" id="gmOut"></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0">build a move</h4>
+        <div class="btnrow">
+          <select class="sel" id="gmKind">
+            <option value="add">Rᵢ ← Rᵢ − k·Rⱼ (add/subtract)</option>
+            <option value="scale">Rᵢ ← k·Rᵢ (scale)</option>
+            <option value="swap">swap Rᵢ ↔ Rⱼ</option>
+          </select>
+          <select class="sel" id="gmI"><option>R1</option><option selected>R2</option><option>R3</option></select>
+          <select class="sel" id="gmJ"><option selected>R1</option><option>R2</option><option>R3</option></select>
+        </div>
+        <div class="dial"><label>amount <span class="eq"><i>k</i></span></label><input type="range" id="gmK" min="-3" max="3" step="0.5" value="1"><span class="dv" id="gmKv">1</span></div>
+        <div class="btnrow">
+          <button class="btn primary" id="gmApply">apply move</button>
+          <button class="btn" id="gmHint">💡 hint</button>
+          <button class="btn ghost" id="gmUndo">↩ undo</button>
+          <button class="btn ghost" id="gmReset">restart</button>
+        </div>
+        <div class="note" id="gmMeter" style="margin-bottom:0"><b>Staircase meter:</b> <span id="gmMeterTxt">0 / 3 cells cleaned</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>🏔 Boss level: the slides' 5-dial monster (with a mystery <span class="eq"><i>a</i></span>)</h3>
+    <p style="margin-top:0">Slides 41–49 run elimination on a 4-clue, 5-dial system whose last demand is an unknown number <span class="eq"><i>a</i></span>. Step through the sweep — the machine uses only your three safe moves — and keep an eye on the bottom-right cell: it quietly carries <span class="eq"><i>a</i></span> the whole way, then becomes the <b>make-or-break test</b>.</p>
+    <div class="btnrow">
+      <button class="btn primary" id="bsNext">next move ▸</button>
+      <button class="btn" id="bsBack">◂ back</button>
+      <button class="btn" id="bsEnd">jump to the end</button>
+      <button class="btn ghost" id="bsReset">restart</button>
+    </div>
+    <div class="dial"><label>mystery <span class="eq"><i>a</i></span></label><input type="range" id="bsA" min="-3" max="1" step="0.5" value="-1"><span class="dv" id="bsAv">-1</span></div>
+    <div id="bsHost" style="display:flex;justify-content:center;margin:10px 0"></div>
+    <div class="console" id="bsOut"></div>
+
+    <h4>read the staircase like a pro</h4>
+    <p style="margin-top:4px">With <span class="eq"><i>a</i> = −1</span>, the bottom row is the harmless echo <span class="eq">0 = 0</span> and answers exist. Columns 1, 3, 4 hold pivots (locked dials); columns 2 and 5 have none — <span class="eq"><i>x</i><sub>2</sub></span> and <span class="eq"><i>x</i><sub>5</sub></span> are <b>free dials</b>. Set the free dials to 0 and read the staircase bottom-up, one dial per row: <span class="eq"><i>x</i><sub>4</sub>=1</span>, then <span class="eq"><i>x</i><sub>3</sub>=−1</span>, then <span class="eq"><i>x</i><sub>1</sub>=2</span>. One landing: <span class="hlg"><b>(2, 0, −1, 1, 0)</b></span>. Each free dial then donates one silent move, and the family formula is:</p>
+    <div class="eqcard"><div class="eqrow">
+      <span class="eq"><b>x</b> =</span>
+      <span class="mx"><table><tr><td>2</td></tr><tr><td>0</td></tr><tr><td>−1</td></tr><tr><td>1</td></tr><tr><td>0</td></tr></table></span>
+      <span class="eq">+ <i>λ</i><sub>1</sub></span>
+      <span class="mx"><table><tr><td>2</td></tr><tr><td>1</td></tr><tr><td>0</td></tr><tr><td>0</td></tr><tr><td>0</td></tr></table></span>
+      <span class="eq">+ <i>λ</i><sub>2</sub></span>
+      <span class="mx"><table><tr><td>2</td></tr><tr><td>0</td></tr><tr><td>−1</td></tr><tr><td>2</td></tr><tr><td>1</td></tr></table></span>
+    </div></div>
+    <div class="stick"><b>🕵️ Catch the slides' typo.</b> Slide 49 prints the second silent move as <span class="eq">(2, 0, −2, 1, 1)</span>. A silent move must score <b>0 on every clue</b>. Audit both candidates against all four original clues:</div>
+    <div class="btnrow">
+      <button class="btn" id="tyBad">audit the slide's (2,0,−2,1,1)</button>
+      <button class="btn" id="tyGood">audit the fixed (2,0,−1,2,1)</button>
+    </div>
+    <div class="console" id="tyOut">a real silent move earns four green zeros — let's see which candidate does</div>
+  </div>
+
+  <div class="block">
+    <h3>The deluxe staircase (RREF) — answers by eye</h3>
+    <p style="margin-top:0">Keep cleaning past the staircase: make every pivot a 1, and clear <em>above</em> pivots too, so each pivot sits alone in its column. That's <b>reduced row-echelon form</b>. Why bother? Because free columns then spell out their own silent moves. Slide 54's matrix, already deluxe (solving <span class="eq"><i>A</i><b>x</b> = <b>0</b></span>):</p>
+    <div id="rrHost" style="display:flex;justify-content:center;margin:10px 0"></div>
+    <div class="btnrow">
+      <button class="btn tab active" id="rrShow">show pivots vs free</button>
+      <button class="btn tab" id="rrM1">build move from free column 2</button>
+      <button class="btn tab" id="rrM2">build move from free column 5</button>
+    </div>
+    <div class="console" id="rrOut"></div>
+  </div>
+
+  <div class="block">
+    <h3>The grand finale: the inverse, computed by cleaning</h3>
+    <p style="margin-top:0">Remember Part 4's undo button? For big matrices, forget formulas — elimination builds it. Park the do-nothing matrix <span class="eq"><i>I</i></span> on the right as a <b>flight recorder</b>: it starts as "nothing done yet" and absorbs every move you make. Clean the left half all the way to <span class="eq"><i>I</i></span>, and the recorder ends up holding <em>everything that turns <span class="eq"><i>A</i></span> into <span class="eq"><i>I</i></span></em> — which is precisely <span class="eq"><i>A</i><sup>−1</sup></span>.</p>
+    <div class="btnrow">
+      <button class="btn primary" id="aiNext">next move ▸</button>
+      <button class="btn" id="aiBack">◂ back</button>
+      <button class="btn" id="aiCheck">✓ verify A·A⁻¹ = I</button>
+      <button class="btn ghost" id="aiReset">restart</button>
+    </div>
+    <div id="aiHost" style="display:flex;justify-content:center;margin:10px 0"></div>
+    <div class="console" id="aiOut"></div>
+    <div class="note"><b>Why it works:</b> column <span class="eq"><i>i</i></span> of <span class="eq"><i>A</i><sup>−1</sup></span> solves the mini-system "<span class="eq"><i>A</i><b>x</b> = </span>column <span class="eq"><i>i</i></span> of <span class="eq"><i>I</i></span>". Parking all of <span class="eq"><i>I</i></span> on the right solves all those systems in <b>one</b> sweep. If the left half ever stalls (a zero pivot, nothing to swap in), then <span class="eq">det <i>A</i> = 0</span> — the broken undo button from Part 3, met again. Working engineers' proverb: <em>solve, don't invert</em> — libraries run this sweep instead of building formulas.</div>
+  </div>
+</section>
+<!-- ================================================================ PART 5 -->
+<section class="part" id="p5" style="--acc:var(--rose)">
+  <div class="parthead">
+    <span class="badge">PART 6</span>
+    <h2>The payoff</h2>
+    <div class="why">Where this lands in machine learning, a final boss quiz, and the one card to keep.</div>
+  </div>
+
+  <div class="block">
+    <h3>The doorway to ML</h3>
+    <p style="margin-top:0">Real datasets hand you <b>thousands of clues</b> for a handful of dials — systems so overloaded that the honest ending is almost always <span class="verdict v0">0</span>. No exact solution. And that's where machine learning <em>begins</em>: <b>linear regression</b> (next lecture) finds the dial setting that makes every lamp <span class="hl">as close to green as possible</span>. Least total complaint. Every tool from today — columns as steps, staircases, the undo button, the flip — is a working part inside that machine.</p>
+    <p style="margin-bottom:0">So today wasn't just algebra. It was the grammar of the entire course.</p>
+  </div>
+
+  <div class="block">
+    <h3>🏆 Final boss: five questions</h3>
+    <p style="margin-top:0">No notes needed — every answer is something you <em>did</em> on this page.</p>
+
+    <div class="qcard" data-q="1">
+      <div class="qq">1 · After cleaning, a system's staircase contains the row <span class="eq">0 0 0 | 4</span>. The verdict?</div>
+      <button class="qopt" data-ok="0">One solution, and it's 4</button>
+      <button class="qopt" data-ok="1">No solution — that row demands 0 = 4, and clues that lie get the whole case thrown out</button>
+      <button class="qopt" data-ok="0">Infinitely many solutions</button>
+      <div class="qwhy" id="qw1"></div>
+    </div>
+
+    <div class="qcard" data-q="2">
+      <div class="qq">2 · Which cleaning move is <b>forbidden</b>?</div>
+      <button class="qopt" data-ok="0">Swapping two rows</button>
+      <button class="qopt" data-ok="0">Adding one row to another</button>
+      <button class="qopt" data-ok="1">Scaling a row by 0</button>
+      <div class="qwhy" id="qw2"></div>
+    </div>
+
+    <div class="qcard" data-q="3">
+      <div class="qq">3 · A staircase has pivots in columns 1, 3 and 4 (of 5). Which dials are free?</div>
+      <button class="qopt" data-ok="0"><span class="eq"><i>x</i><sub>1</sub></span> and <span class="eq"><i>x</i><sub>3</sub></span></button>
+      <button class="qopt" data-ok="1"><span class="eq"><i>x</i><sub>2</sub></span> and <span class="eq"><i>x</i><sub>5</sub></span></button>
+      <button class="qopt" data-ok="0">None — pivots mean everything is locked</button>
+      <div class="qwhy" id="qw3"></div>
+    </div>
+
+    <div class="qcard" data-q="4">
+      <div class="qq">4 · <span class="eq">(<i>A</i>·<i>B</i>)<sup>T</sup></span> equals…</div>
+      <button class="qopt" data-ok="0"><span class="eq"><i>A</i><sup>T</sup>·<i>B</i><sup>T</sup></span></button>
+      <button class="qopt" data-ok="1"><span class="eq"><i>B</i><sup>T</sup>·<i>A</i><sup>T</sup></span> — undo-style operations reverse the order, socks &amp; shoes</button>
+      <button class="qopt" data-ok="0"><span class="eq"><i>A</i>·<i>B</i></span> — flipping a product changes nothing</button>
+      <div class="qwhy" id="qw4"></div>
+    </div>
+
+    <div class="qcard" data-q="5">
+      <div class="qq">5 · det <span class="eq"><i>A</i></span> = 0 tells you…</div>
+      <button class="qopt" data-ok="0">The matrix is extra healthy</button>
+      <button class="qopt" data-ok="1">A squashes different points onto the same spot, so no undo button can exist</button>
+      <button class="qopt" data-ok="0">The matrix has no transpose</button>
+      <div class="qwhy" id="qw5"></div>
+    </div>
+
+    <div class="console" id="quizScore">score: 0 / 5</div>
+  </div>
+
+  <div class="cheat">
+    <h3>🗂 The one card to keep</h3>
+    <ol>
+      <li><b>Pack it:</b> write the clues as <span class="eq">[<i>A</i> | <b>b</b>]</span>.</li>
+      <li><b>Clean it:</b> sweep to a staircase using only swap · scale-by-nonzero · add.</li>
+      <li><b>Read the fate:</b> a row "<span class="eq">0 = non-zero</span>" → <b>0 answers</b>. Otherwise: no free columns → <b>1</b>; free columns → <b>∞</b>.</li>
+      <li><b>One landing:</b> free dials to 0, walk the staircase bottom-up.</li>
+      <li><b>Silent moves:</b> one per free column (that dial 1, others 0, demands 0).</li>
+      <li><b>Everything:</b> answers = landing + any mix of silent moves.</li>
+      <li><b>Bonus:</b> clean <span class="eq">[<i>A</i> | <i>I</i>]</span> until the left is <span class="eq"><i>I</i></span> — the right half becomes <span class="eq"><i>A</i><sup>−1</sup></span>.</li>
+    </ol>
+  </div>
+</section>
+
+<div class="foot">
+  ZC416 · Mathematical Foundations for ML &amp; Data Science · Topic 1: Systems of Linear Equations · an original interactive re-telling of the lecture slides
+  <br>Built for the Work Integrated Learning Programmes (WILP), BITS Pilani · single file · no libraries · works offline
+</div>
+<script>
+/* ============ tiny core ============ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const nice=x=>{ if(Math.abs(x)<1e-9)x=0; const r=Math.round(x*100)/100;
+  return (Math.abs(r-Math.round(r))<1e-9)?String(Math.round(r)):String(r); };
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+function matMul(A,B){const m=A.length,k=A[0].length,n=B[0].length,C=[];
+  for(let i=0;i<m;i++){C.push([]);for(let j=0;j<n;j++){let s=0;for(let l=0;l<k;l++)s+=A[i][l]*B[l][j];C[i].push(s);}}return C;}
+const matT=A=>A[0].map((_,j)=>A.map(r=>r[j]));
+
+/* .mx matrix builder */
+function mxHTML(rows,opt){
+  opt=opt||{};
+  let h='<span class="mx"'+(opt.id?' id="'+opt.id+'"':'')+'><table>';
+  rows.forEach((r,i)=>{h+='<tr>';
+    r.forEach((v,j)=>{
+      const cls=[(opt.bar===j)?'bar':'',opt.cls?(opt.cls(i,j)||''):''].join(' ').trim();
+      h+='<td'+(cls?' class="'+cls+'"':'')+'>'+(typeof v==='number'?nice(v):v)+'</td>';});
+    h+='</tr>';});
+  return h+'</table></span>';
+}
+
+/* lamps */
+function lamp(id,state){const el=$('#'+id); if(!el)return;
+  el.className='lamp '+(state===true?'on':state===false?'off':'idle');}
+
+/* dial wiring: input#id + span#idv */
+function dial(id,fn){
+  const inp=$('#'+id), out=$('#'+id+'v');
+  const show=()=>{if(out)out.textContent=nice(parseFloat(inp.value));};
+  inp.addEventListener('input',()=>{show();if(fn)fn();});
+  show();
+  const get=()=>parseFloat(inp.value);
+  get.set=v=>{inp.value=v;show();};
+  return get;
+}
+
+/* DPR-aware canvas */
+function canv(id,draw){
+  const c=$('#'+id); if(!c)return null;
+  const ctx=c.getContext('2d');
+  function resize(){
+    const dpr=Math.max(1,window.devicePixelRatio||1);
+    const rect=c.getBoundingClientRect();
+    const w=rect.width||c.width, h=w*(c.height/c.width);
+    c.style.height=h+'px';
+    c.width=Math.round(w*dpr); c.height=Math.round(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    draw(ctx,w,h);
+  }
+  let raf=null;
+  window.addEventListener('resize',()=>{if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(resize);});
+  resize();
+  return {redraw:()=>{const dpr=Math.max(1,window.devicePixelRatio||1);draw(ctx,c.width/dpr,c.height/dpr);},el:c};
+}
+
+/* shared axes for light theme */
+function axes(ctx,W,H,x0,x1,y0,y1){
+  const pad=36;
+  const X=v=>pad+(v-x0)/(x1-x0)*(W-2*pad);
+  const Y=v=>H-pad-(v-y0)/(y1-y0)*(H-2*pad);
+  ctx.strokeStyle='#E3DECF';ctx.lineWidth=1;
+  for(let gx=Math.ceil(x0);gx<=x1;gx++){ctx.beginPath();ctx.moveTo(X(gx),pad);ctx.lineTo(X(gx),H-pad);ctx.stroke();}
+  for(let gy=Math.ceil(y0);gy<=y1;gy++){ctx.beginPath();ctx.moveTo(pad,Y(gy));ctx.lineTo(W-pad,Y(gy));ctx.stroke();}
+  ctx.strokeStyle='#B9B2A0';ctx.lineWidth=1.4;
+  ctx.beginPath();
+  if(x0<=0&&x1>=0){ctx.moveTo(X(0),pad);ctx.lineTo(X(0),H-pad);}
+  if(y0<=0&&y1>=0){ctx.moveTo(pad,Y(0));ctx.lineTo(W-pad,Y(0));}
+  ctx.stroke();
+  return {X,Y,pad};
+}
+function lineOn(ctx,m,x0,x1,a,b,c,col,wd,dash,alpha){
+  if(alpha!==undefined&&alpha<=0.01)return;
+  ctx.save();
+  if(alpha!==undefined)ctx.globalAlpha=alpha;
+  ctx.strokeStyle=col;ctx.lineWidth=wd||3;
+  if(dash)ctx.setLineDash(dash);
+  ctx.beginPath();
+  if(Math.abs(b)>1e-9){ctx.moveTo(m.X(x0),m.Y((c-a*x0)/b));ctx.lineTo(m.X(x1),m.Y((c-a*x1)/b));}
+  else if(Math.abs(a)>1e-9){ctx.moveTo(m.X(c/a),m.Y(-999));ctx.lineTo(m.X(c/a),m.Y(999));}
+  ctx.stroke();ctx.restore();
+}
+function arrowOn(ctx,x1,y1,x2,y2,col,wd){
+  const hd=8+(wd||2);
+  ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=wd||2.5;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const an=Math.atan2(y2-y1,x2-x1);
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hd*Math.cos(an-0.4),y2-hd*Math.sin(an-0.4));
+  ctx.lineTo(x2-hd*Math.cos(an+0.4),y2-hd*Math.sin(an+0.4));
+  ctx.closePath();ctx.fill();
+}
+
+/* demo registry */
+window.__demos=[];
+function runDemos(){window.__demos.forEach(f=>{try{f();}catch(e){console.error(e);}});}
+
+/* ============ chrome: progress bar, topbar, pill highlighting ============ */
+function initChrome(){
+  const bar=$('#pbar'), top=$('#topbar'), pills=$$('#pillnav a');
+  const secs=pills.map(a=>$(a.getAttribute('href')));
+  function onScroll(){
+    const st=window.scrollY, h=document.body.scrollHeight-window.innerHeight;
+    bar.style.width=(100*st/(h||1))+'%';
+    top.classList.toggle('show',st>420);
+    let idx=0;
+    secs.forEach((s,i)=>{if(s&&s.offsetTop-140<=st)idx=i;});
+    pills.forEach((a,i)=>a.classList.toggle('active',i===idx));
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+}
+
+/* ============ scrollytelling engine ============ */
+/* registers steps inside a container; calls cb(sceneIndex) when a step centers */
+function scrolly(containerId,cb){
+  const box=$('#'+containerId); if(!box)return;
+  const steps=$$('.step',box);
+  if(!('IntersectionObserver' in window)){steps.forEach(s=>s.classList.add('live'));cb(steps.length-1);return;}
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        steps.forEach(s=>s.classList.remove('live'));
+        e.target.classList.add('live');
+        cb(parseInt(e.target.dataset.scene,10));
+      }
+    });
+  },{rootMargin:'-42% 0px -42% 0px',threshold:0});
+  steps.forEach(s=>io.observe(s));
+}
+</script>
+<script>
+/* ============ P0: the hook ============ */
+window.__demos.push(function(){
+  if(!$('#hkX'))return;
+  let won=false;
+  const gx=dial('hkX',render), gy=dial('hkY',render);
+  function render(){
+    const x=gx(), y=gy(), s=x+y, d=x-y;
+    lamp('hkL1',s===5); lamp('hkL2',d===1);
+    $('#hkS1').textContent='now: '+nice(s)+(s===5?' ✓':' (need 5)');
+    $('#hkS2').textContent='now: '+nice(d)+(d===1?' ✓':' (need 1)');
+    if(s===5&&d===1){
+      if(!won){won=true;$('#hookBlock').style.borderColor='var(--green)';}
+      $('#hkOut').innerHTML='<span class="g">BOTH LAMPS GREEN 🎉  x = '+x+', y = '+y+'</span>\n'+
+        'You just solved a system of linear equations.\nThat feeling of "both at once" is the entire subject.';
+    }else{
+      won=false;$('#hookBlock').style.borderColor='';
+      $('#hkOut').innerHTML='x + y = <span class="y">'+nice(s)+'</span>   ·   x − y = <span class="y">'+nice(d)+'</span>\n'+
+        (s===5?'lamp 1 is happy — keep it that way':d===1?'lamp 2 is happy — now please lamp 1':'get one lamp green first, then protect it');
+    }
+  }
+  render();
+});
+
+/* ============ P1: the factory ============ */
+window.__demos.push(function(){
+  if(!$('#fc1'))return;
+  const g1=dial('fc1',render), g2=dial('fc2',render), g3=dial('fc3',render);
+  const R=[
+    {k:'Wood', tot:9, f:(a,b,c)=>a+2*b+c},
+    {k:'Lab',  tot:8, f:(a,b,c)=>2*a+b+c},
+    {k:'Mach', tot:7, f:(a,b,c)=>a+b+2*c},
+    {k:'Ship', tot:11,f:(a,b,c)=>3*a+b+2*c}
+  ];
+  function render(){
+    const a=g1(),b=g2(),c=g3();
+    let all=true;
+    R.forEach(r=>{
+      const used=r.f(a,b,c), fill=$('#mf'+r.k);
+      fill.style.width=clamp(used/r.tot*100,0,100)+'%';
+      fill.className='mfill'+(used===r.tot?' full':used>r.tot?' over':'');
+      $('#mn'+r.k).textContent=used+' / '+r.tot;
+      lamp('ml'+r.k,used===r.tot?true:(used>r.tot?false:null));
+      if(used!==r.tot)all=false;
+    });
+    $('#fcOut').innerHTML=all?
+      '<span class="g">STOREROOM EXACTLY EMPTY 🎉  plan: '+a+' chairs, '+b+' tables, '+c+' cabinet'+(c===1?'':'s')+'</span>\nFour lamps, one dial setting. This system has exactly ONE answer.':
+      'four bosses to please at once\n<span class="y">'+[a,b,c].join(', ')+'</span> → some bar is off — red means over, grey means short';
+  }
+  $('#fcSolve').addEventListener('click',()=>{g1.set(2);g2.set(3);g3.set(1);render();});
+  $('#fcReset').addEventListener('click',()=>{g1.set(1);g2.set(1);g3.set(1);render();});
+  render();
+});
+
+/* ============ P1: fate dial + free dial ============ */
+window.__demos.push(function(){
+  if(!$('#fateC'))return;
+  const gc=dial('fateC',render);
+  function render(){
+    const c=gc(), echo=Math.abs(c-5)<1e-9;
+    $('#fateOut').innerHTML=
+      'forced by clues 1+2:   2x₁ + 3x₃ = <span class="y">5</span>\n'+
+      'your clue 3 demands:   2x₁ + 3x₃ = <span class="y">'+nice(c)+'</span>\n\n'+
+      (echo?'<span class="p">5 = 5 → your clue is an ECHO. Nothing new is pinned; a free dial survives.\nverdict: ∞ answers</span>':
+            '<span class="r">5 ≠ '+nice(c)+' → your clue FIGHTS a forced fact. No dials can obey both.\nverdict: 0 answers</span>'+(Math.abs(c-1)<1e-9?'   (this is exactly slide 9)':''));
+  }
+  render();
+});
+window.__demos.push(function(){
+  if(!$('#fd3'))return;
+  const g3=dial('fd3',render);
+  function render(){
+    const x3=g3(), x1=2.5-1.5*x3, x2=0.5+0.5*x3;
+    const c1=x1+x2+x3, c2=x1-x2+2*x3, c3=2*x1+3*x3;
+    lamp('fdL1',Math.abs(c1-3)<1e-9);lamp('fdL2',Math.abs(c2-2)<1e-9);lamp('fdL3',Math.abs(c3-5)<1e-9);
+    $('#fdS1').textContent='x₁='+nice(x1)+', x₂='+nice(x2)+' → '+nice(c1)+' ✓';
+    $('#fdS2').textContent='→ '+nice(c2)+' ✓';
+    $('#fdS3').textContent='→ '+nice(c3)+' ✓';
+  }
+  render();
+});
+
+/* ============ P2: scrolly line stage ============ */
+window.__demos.push(function(){
+  const c=$('#lineStage'); if(!c)return;
+  /* animated state: current & target */
+  const SUS=[[0,5],[1,4],[2.5,2.5],[4,1],[5,0],[6,-1],[-1,6],[7,-2]];
+  let cur={dots:0,l1:0,l2:0,a:1,b:-1,cc:1,dot:0,glow:0,gap:0};
+  let tgt={...cur};
+  const SCENES=[
+    {dots:1,l1:1,l2:0,a:1,b:-1,cc:1,dot:0,glow:0,gap:0,
+     txt:'every green-lamp pair for clue 1 lines up → a LINE'},
+    {dots:.35,l1:1,l2:1,a:1,b:-1,cc:1,dot:0,glow:0,gap:0,
+     txt:'clue 2 (x − y = 1) draws its own line'},
+    {dots:.2,l1:1,l2:1,a:1,b:-1,cc:1,dot:1,glow:0,gap:0,
+     txt:'the crossing (3, 2) pleases BOTH clues → 1 answer'},
+    {dots:0,l1:1,l2:1,a:1,b:1,cc:2,dot:0,glow:0,gap:1,
+     txt:'same tilt, different demand → parallel → 0 answers'},
+    {dots:0,l1:1,l2:1,a:2,b:2,cc:10,dot:0,glow:1,gap:0,
+     txt:'2x + 2y = 10 is clue 1 twice → SAME line → ∞ answers'}
+  ];
+  let label=SCENES[0].txt;
+  const cv=canv('lineStage',function(ctx,W,H){
+    ctx.clearRect(0,0,W,H);
+    const m=axes(ctx,W,H,-1.5,7.5,-2.5,7.5);
+    /* clue-1 line + suspects */
+    lineOn(ctx,m,-1.5,7.5,1,1,5,'#0D9488',3.5,null,cur.l1);
+    const n=Math.round(cur.dots*SUS.length);
+    for(let i=0;i<n;i++){
+      const p=SUS[i];
+      ctx.globalAlpha=Math.min(1,cur.dots*SUS.length-i);
+      ctx.fillStyle='#0D9488';
+      ctx.beginPath();ctx.arc(m.X(p[0]),m.Y(p[1]),5.5,0,7);ctx.fill();
+      ctx.globalAlpha=1;
+    }
+    /* same-line glow */
+    if(cur.glow>0.02){ctx.save();ctx.globalAlpha=cur.glow*.45;ctx.strokeStyle='#7C3AED';ctx.lineWidth=13;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(m.X(-1.2),m.Y(6.2));ctx.lineTo(m.X(7.2),m.Y(-2.2));ctx.stroke();ctx.restore();}
+    /* clue-2 line */
+    lineOn(ctx,m,-1.5,7.5,cur.a,cur.b,cur.cc,'#D97706',3.5,null,cur.l2);
+    /* parallel gap */
+    if(cur.gap>0.02){
+      const gx=5.4, y1=5-gx, y2=(cur.cc-cur.a*gx)/cur.b;
+      ctx.save();ctx.globalAlpha=cur.gap;
+      ctx.strokeStyle='#E11D48';ctx.setLineDash([5,5]);ctx.lineWidth=2.2;
+      ctx.beginPath();ctx.moveTo(m.X(gx),m.Y(y1));ctx.lineTo(m.X(gx),m.Y(y2));ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#E11D48';ctx.font='700 13px system-ui';
+      ctx.fillText('never meet',m.X(gx)+8,m.Y((y1+y2)/2));
+      ctx.restore();
+    }
+    /* crossing dot */
+    if(cur.dot>0.02){
+      ctx.save();ctx.globalAlpha=cur.dot;
+      ctx.fillStyle='#16A34A';ctx.shadowColor='#16A34A';ctx.shadowBlur=16;
+      ctx.beginPath();ctx.arc(m.X(3),m.Y(2),8,0,7);ctx.fill();ctx.shadowBlur=0;
+      ctx.font='800 15px system-ui';ctx.fillText('(3, 2)',m.X(3)+13,m.Y(2)-10);
+      ctx.restore();
+    }
+    /* labels */
+    ctx.font='700 13px system-ui';
+    ctx.fillStyle='#0D9488';ctx.globalAlpha=cur.l1;ctx.fillText('x + y = 5',m.X(-1.1),m.Y(6.9));
+    ctx.globalAlpha=cur.l2;ctx.fillStyle='#D97706';
+    ctx.fillText(nice(cur.a)+'x + '+(cur.b<0?'− ':'')+nice(Math.abs(cur.b))+'y = '+nice(cur.cc),m.X(2.6),m.Y(-1.9));
+    ctx.globalAlpha=1;
+  });
+  function tick(){
+    let moving=false;
+    for(const k of Object.keys(tgt)){
+      const d=tgt[k]-cur[k];
+      if(Math.abs(d)>0.004){cur[k]+=d*0.06;moving=true;}else cur[k]=tgt[k];
+    }
+    cv.redraw();
+    requestAnimationFrame(tick);
+  }
+  scrolly('scrollyLines',i=>{
+    const s=SCENES[clamp(i,0,SCENES.length-1)];
+    tgt={dots:s.dots,l1:s.l1,l2:s.l2,a:s.a,b:s.b,cc:s.cc,dot:s.dot,glow:s.glow,gap:s.gap};
+    $('#lineOut').textContent=s.txt;
+  });
+  tick();
+});
+
+/* ============ P2: steer clue 2 ============ */
+window.__demos.push(function(){
+  const c=$('#steerCanvas'); if(!c)return;
+  const ga=dial('stA',render), gb=dial('stB',render), gc=dial('stC',render);
+  function verdict(){
+    const a=ga(),b=gb(),cc=gc();
+    const D=b-a; /* clue1 is (1,1,5) */
+    if(Math.abs(D)>1e-9)return {v:1,x:(5*b-cc)/D,y:(cc-5*a)/D,D};
+    if(Math.abs(a)<1e-9&&Math.abs(b)<1e-9)return {v:9,D};
+    return {v:(Math.abs(cc-5*a)<1e-9)?2:0,D};
+  }
+  const cv=canv('steerCanvas',function(ctx,W,H){
+    ctx.clearRect(0,0,W,H);
+    const m=axes(ctx,W,H,-2,8,-2,8);
+    const r=verdict();
+    if(r.v===2){ctx.save();ctx.globalAlpha=.4;ctx.strokeStyle='#7C3AED';ctx.lineWidth=13;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(m.X(-1.6),m.Y(6.6));ctx.lineTo(m.X(7.6),m.Y(-2.6));ctx.stroke();ctx.restore();}
+    lineOn(ctx,m,-2,8,1,1,5,'#0D9488',3.4);
+    if(r.v!==9)lineOn(ctx,m,-2,8,ga(),gb(),gc(),'#D97706',3.4);
+    if(r.v===1&&r.x>-2&&r.x<8&&r.y>-2&&r.y<8){
+      ctx.fillStyle='#16A34A';ctx.shadowColor='#16A34A';ctx.shadowBlur=14;
+      ctx.beginPath();ctx.arc(m.X(r.x),m.Y(r.y),7,0,7);ctx.fill();ctx.shadowBlur=0;
+      ctx.font='800 14px system-ui';ctx.fillText('('+nice(r.x)+', '+nice(r.y)+')',m.X(r.x)+11,m.Y(r.y)-9);
+    }
+  });
+  function render(){
+    cv.redraw();
+    const r=verdict();
+    const eq=nice(ga())+'x '+(gb()<0?'− '+nice(-gb()):'+ '+nice(gb()))+'y = '+nice(gc());
+    let msg='your clue 2:  <span class="y">'+eq+'</span>\ntilt-match test: b − a = '+nice(r.D)+'\n\n';
+    if(r.v===1)msg+='tilts differ → one crossing at (<span class="g">'+nice(r.x)+', '+nice(r.y)+'</span>)\nverdict: <span class="g">1 answer</span>';
+    else if(r.v===2)msg+='same tilt AND same demand → the same line, twice\nverdict: <span class="p">∞ answers</span>';
+    else if(r.v===0)msg+='same tilt, different demand → parallel forever\nverdict: <span class="r">0 answers</span>';
+    else msg+='a = b = 0 erases the clue — not much of a clue';
+    $('#stOut').innerHTML=msg;
+  }
+  function preset(a,b,cc,btn){ga.set(a);gb.set(b);gc.set(cc);
+    $$('#stGo1,#stGo0,#stGoInf').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render();}
+  $('#stGo1').addEventListener('click',function(){preset(1,-1,1,this);});
+  $('#stGo0').addEventListener('click',function(){preset(1,1,2,this);});
+  $('#stGoInf').addEventListener('click',function(){preset(2,2,10,this);});
+  render();
+});
+
+/* ============ P2: walls in 3D (pure canvas, painter's algorithm) ============ */
+window.__demos.push(function(){
+  const c=$('#wallsCanvas'); if(!c)return;
+  let az=0.85, el=0.42, mode='point', dragging=false;
+  const L=2.6;
+  const P=(o,u,v,col)=>({o,u,v,col});
+  const MODES={
+    point:{planes:[P([0,0,0],[1,0,0],[0,1,0],'13,148,136'),
+                   P([0,0,0],[1,0,0],[0,0,1],'79,70,229'),
+                   P([0,0,0],[1,0,0.55],[0,1,0.55],'217,119,6')],
+      sol:{type:'point',at:[0,0,0]},
+      eq:'wall 1: x₃=0 · wall 2: x₂=0 · wall 3: x₃=0.55x₁+0.55x₂',
+      story:'all three walls agree at exactly one spot → <span class="g">1 answer</span>'},
+    spine:{planes:[P([0,0,0],[1,0,0],[0,1,0],'13,148,136'),
+                   P([0,0,0],[1,0,0],[0,1,0.9],'79,70,229'),
+                   P([0,0,0],[1,0,0],[0,1,-0.9],'217,119,6')],
+      sol:{type:'line',a:[-L,0,0],b:[L,0,0]},
+      eq:'wall 1: x₃=0 · wall 2: x₃=0.9x₂ · wall 3: x₃=−0.9x₂',
+      story:'like pages sharing a spine — a whole line survives → <span class="p">∞ answers</span>'},
+    prism:{planes:[P([0,0,0],[1,0,0],[0,1,0],'13,148,136'),
+                   P([0,0,1.4],[1,0,0],[0,1,-0.8],'79,70,229'),
+                   P([0,0,1.4],[1,0,0],[0,1,0.8],'217,119,6')],
+      sol:{type:'prism',ls:[[[-L,0,1.4],[L,0,1.4]],[[-L,1.75,0],[L,1.75,0]],[[-L,-1.75,0],[L,-1.75,0]]]},
+      eq:'wall 1: x₃=0 · wall 2: x₃=1.4−0.8x₂ · wall 3: x₃=1.4+0.8x₂',
+      story:'every PAIR meets (dashed creases) but the creases run parallel — no point is on all three → <span class="r">0 answers</span>'},
+    par:{planes:[P([0,0,-1.0],[1,0,0],[0,1,0],'13,148,136'),
+                 P([0,0,1.0],[1,0,0],[0,1,0],'79,70,229'),
+                 P([0,0,0],[1,0,0],[0,0,1],'217,119,6')],
+      sol:{type:'gap',a:[1.9,1.9,-1.0],b:[1.9,1.9,1.0]},
+      eq:'wall 1: x₃=−1 · wall 2: x₃=+1 · wall 3: x₂=0',
+      story:'walls 1 and 2 are parallel — they alone can never agree → <span class="r">0 answers</span>'}
+  };
+  let proj;
+  const cv=canv('wallsCanvas',function(ctx,W,H){
+    ctx.clearRect(0,0,W,H);
+    const cx=W*0.5, cy=H*0.55, scale=Math.min(W,H)/(L*3.2);
+    const ca=Math.cos(az),sa=Math.sin(az),ce=Math.cos(el),se=Math.sin(el);
+    proj=(x,y,z)=>{const Xr=x*ca-y*sa, Yr=x*sa+y*ca, Y2=Yr*ce-z*se;
+      return {sx:cx+Xr*scale, sy:cy-(Yr*se+z*ce)*scale, depth:Y2};};
+    const O=proj(0,0,0);
+    [[L*1.3,0,0,'x₁'],[0,L*1.3,0,'x₂'],[0,0,L*1.1,'x₃']].forEach(ax=>{
+      const E=proj(ax[0],ax[1],ax[2]);
+      ctx.strokeStyle='#C9C2B0';ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(O.sx,O.sy);ctx.lineTo(E.sx,E.sy);ctx.stroke();
+      ctx.fillStyle='#98A1B3';ctx.font='12px system-ui';ctx.fillText(ax[3],E.sx+4,E.sy);
+    });
+    const N=8, cells=[];
+    MODES[mode].planes.forEach(pl=>{
+      for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+        const s0=-L+i/N*2*L,s1=-L+(i+1)/N*2*L,t0=-L+j/N*2*L,t1=-L+(j+1)/N*2*L;
+        const pt=(s,t)=>proj(pl.o[0]+pl.u[0]*s+pl.v[0]*t, pl.o[1]+pl.u[1]*s+pl.v[1]*t, pl.o[2]+pl.u[2]*s+pl.v[2]*t);
+        const Q=[pt(s0,t0),pt(s1,t0),pt(s1,t1),pt(s0,t1)];
+        cells.push({Q,col:pl.col,depth:(Q[0].depth+Q[1].depth+Q[2].depth+Q[3].depth)/4});
+      }
+    });
+    cells.sort((a,b)=>b.depth-a.depth);
+    cells.forEach(cl=>{
+      ctx.fillStyle='rgba('+cl.col+',0.30)';
+      ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(cl.Q[0].sx,cl.Q[0].sy);
+      for(let k=1;k<4;k++)ctx.lineTo(cl.Q[k].sx,cl.Q[k].sy);
+      ctx.closePath();ctx.fill();ctx.stroke();
+    });
+    const sol=MODES[mode].sol;
+    if(sol.type==='point'){
+      const S=proj(...sol.at);
+      ctx.fillStyle='#16A34A';ctx.shadowColor='#16A34A';ctx.shadowBlur=16;
+      ctx.beginPath();ctx.arc(S.sx,S.sy,8,0,7);ctx.fill();ctx.shadowBlur=0;
+      ctx.font='800 14px system-ui';ctx.fillText('the answer',S.sx+13,S.sy-9);
+    }else if(sol.type==='line'){
+      const A=proj(...sol.a),B=proj(...sol.b);
+      ctx.strokeStyle='#16A34A';ctx.lineWidth=5;ctx.lineCap='round';ctx.shadowColor='#16A34A';ctx.shadowBlur=12;
+      ctx.beginPath();ctx.moveTo(A.sx,A.sy);ctx.lineTo(B.sx,B.sy);ctx.stroke();ctx.shadowBlur=0;
+    }else if(sol.type==='prism'){
+      sol.ls.forEach(sg=>{
+        const A=proj(...sg[0]),B=proj(...sg[1]);
+        ctx.strokeStyle='#6B7280';ctx.lineWidth=2;ctx.setLineDash([7,5]);
+        ctx.beginPath();ctx.moveTo(A.sx,A.sy);ctx.lineTo(B.sx,B.sy);ctx.stroke();ctx.setLineDash([]);
+      });
+    }else if(sol.type==='gap'){
+      const A=proj(...sol.a),B=proj(...sol.b);
+      ctx.strokeStyle='#E11D48';ctx.lineWidth=2.2;ctx.setLineDash([5,5]);
+      ctx.beginPath();ctx.moveTo(A.sx,A.sy);ctx.lineTo(B.sx,B.sy);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#E11D48';ctx.font='700 13px system-ui';ctx.fillText('gap',A.sx+7,(A.sy+B.sy)/2);
+    }
+  });
+  function render(){cv.redraw();
+    $('#wallsOut').innerHTML=MODES[mode].eq+'\n'+MODES[mode].story+'   ·   <span style="opacity:.65">drag to spin</span>';}
+  function setMode(m,btn){mode=m;$$('#w3Point,#w3Spine,#w3Prism,#w3Par').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+  $('#w3Point').addEventListener('click',function(){setMode('point',this);});
+  $('#w3Spine').addEventListener('click',function(){setMode('spine',this);});
+  $('#w3Prism').addEventListener('click',function(){setMode('prism',this);});
+  $('#w3Par').addEventListener('click',function(){setMode('par',this);});
+  let lx=0,ly=0;
+  c.addEventListener('pointerdown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;try{c.setPointerCapture(e.pointerId);}catch(_){}});
+  c.addEventListener('pointermove',e=>{if(!dragging)return;
+    az+=(e.clientX-lx)*0.01; el=clamp(el+(e.clientY-ly)*0.008,0.08,1.35);
+    lx=e.clientX;ly=e.clientY;cv.redraw();});
+  c.addEventListener('pointerup',()=>{dragging=false;});
+  /* gentle auto-spin, pauses while dragging */
+  (function spin(){ if(!dragging){az+=0.0022;cv.redraw();} requestAnimationFrame(spin); })();
+  render();
+});
+</script>
+<script>
+/* ============ P3: pack the table ============ */
+window.__demos.push(function(){
+  const stage=$('#packStage'); if(!stage)return;
+  const VAL=[[1,2,1,9],[2,1,1,8],[1,1,2,7],[3,1,2,11]];
+  const ROWL=['wood','labour','machine','shipping'], COLL=['chair','table','cabinet','supply'];
+  let packed=false, els=[], labels=[], marks=[];
+  function build(){
+    stage.innerHTML=''; els=[]; labels=[]; marks=[];
+    const W=stage.clientWidth||600;
+    const tX=j=>Math.min(120,W*0.18)+j*Math.min(94,(W-140)/4), tY=i=>44+i*44;
+    const cxA=W/2-125, cxB=W/2+108, mY=i=>42+i*44;
+    const mX=j=>j<3?(cxA+j*64):cxB;
+    /* labels */
+    COLL.forEach((t,j)=>{const s=document.createElement('span');s.textContent=t;
+      s.style.cssText='position:absolute;font-size:12.5px;font-weight:700;color:var(--soft);transition:opacity .6s;left:'+(tX(j)-14)+'px;top:8px';
+      stage.appendChild(s);labels.push(s);});
+    ROWL.forEach((t,i)=>{const s=document.createElement('span');s.textContent=t;
+      s.style.cssText='position:absolute;font-size:12.5px;font-weight:700;color:var(--soft);transition:opacity .6s;left:6px;top:'+(tY(i)+2)+'px';
+      stage.appendChild(s);labels.push(s);});
+    /* numbers */
+    for(let i=0;i<4;i++)for(let j=0;j<4;j++){
+      const s=document.createElement('span');
+      s.textContent=VAL[i][j];
+      s.style.cssText='position:absolute;left:0;top:0;width:44px;text-align:center;font-weight:750;font-size:17px;'+
+        'font-variant-numeric:tabular-nums;padding:6px 0;border-radius:10px;cursor:pointer;'+
+        'transition:transform .8s cubic-bezier(.3,.8,.3,1), background .3s;';
+      s.dataset.i=i;s.dataset.j=j;
+      s.addEventListener('click',()=>{
+        if(!packed)return;
+        $$('span',stage).forEach(x=>x.style.background='');
+        s.style.background=j<3?'#FEF3C7':'#E0F2F1';
+        $('#packMsg').innerHTML=j<3?('that cell is <b>a<sub>'+(i+1)+(j+1)+'</sub> = '+VAL[i][j]+'</b> — row '+(i+1)+', column '+(j+1)+' (row first, always)'):('that is <b>b<sub>'+(i+1)+'</sub> = '+VAL[i][j]+'</b> — a demand, kept after the bar');
+      });
+      stage.appendChild(s);
+      els.push({s,i,j,tx:tX(j)-14,ty:tY(i),mx:mX(j)-14,my:mY(i)});
+    }
+    /* brackets + bar (matrix mode furniture) */
+    function mk(css){const d=document.createElement('div');d.style.cssText='position:absolute;transition:opacity .7s;opacity:0;'+css;stage.appendChild(d);marks.push(d);return d;}
+    const top=mY(0)-6, bot=mY(3)+40;
+    mk('left:'+(cxA-26)+'px;top:'+top+'px;width:10px;height:'+(bot-top)+'px;border:3px solid var(--ink);border-right:none;border-radius:10px 0 0 10px');
+    mk('left:'+(cxA+3*64-8)+'px;top:'+top+'px;width:10px;height:'+(bot-top)+'px;border:3px solid var(--ink);border-left:none;border-radius:0 10px 10px 0');
+    mk('left:'+(cxB-24)+'px;top:'+top+'px;width:10px;height:'+(bot-top)+'px;border:3px solid var(--amber);border-right:none;border-radius:10px 0 0 10px');
+    mk('left:'+(cxB+30)+'px;top:'+top+'px;width:10px;height:'+(bot-top)+'px;border:3px solid var(--amber);border-left:none;border-radius:0 10px 10px 0');
+    const lab=mk('left:'+(cxA-70)+'px;top:'+((top+bot)/2-14)+'px;font-weight:800;font-size:17px;color:var(--ink)');lab.innerHTML='A =';
+    const lab2=mk('left:'+(cxB-72)+'px;top:'+((top+bot)/2-14)+'px;font-weight:800;font-size:17px;color:var(--amber)');lab2.innerHTML='b =';
+    apply(false);
+  }
+  function apply(anim){
+    els.forEach(e=>{
+      const x=packed?e.mx:e.tx, y=packed?e.my:e.ty;
+      e.s.style.transform='translate('+x+'px,'+y+'px)';
+      e.s.style.color=(packed&&e.j===3)?'var(--amber)':'var(--ink)';
+    });
+    labels.forEach(l=>l.style.opacity=packed?0:1);
+    marks.forEach(m=>m.style.opacity=packed?1:0);
+    $('#packMsg').innerHTML=packed?'packed! A is 4×3, b is 4×1 — <b>click any number</b> to read its address':'the words are decoration — the grid is the information';
+  }
+  $('#packBtn').addEventListener('click',()=>{packed=true;apply(true);});
+  $('#packBack').addEventListener('click',()=>{packed=false;apply(true);});
+  window.addEventListener('resize',()=>{const was=packed;build();packed=was;apply(false);});
+  build();
+});
+
+/* ============ P3: add & scale ============ */
+window.__demos.push(function(){
+  const host=$('#easyHost'); if(!host)return;
+  const A=[[1,2],[3,4]], B=[[5,0],[-1,2]];
+  let hov=null;
+  const gl=dial('easyL',render);
+  function render(){
+    const L=gl(), S=A.map((r,i)=>r.map((v,j)=>v+B[i][j])), T=A.map(r=>r.map(v=>L*v));
+    const hl=(i,j)=>hov&&hov[0]===i&&hov[1]===j?'hot':'';
+    host.innerHTML=
+      '<span class="mxlab">A =</span>'+mxHTML(A,{cls:hl})+
+      '<span class="mxlab">+</span><span class="mxlab">B =</span>'+mxHTML(B,{cls:hl})+
+      '<span class="mxlab">=</span>'+mxHTML(S,{id:'easySum',cls:(i,j)=>hov&&hov[0]===i&&hov[1]===j?'win':''})+
+      '<span class="mxlab" style="margin-left:26px">'+nice(L)+' · A =</span>'+mxHTML(T,{cls:()=>'hotr'});
+    $$('#easySum td').forEach((td)=>{
+      const tr=td.parentElement, i=[...tr.parentElement.children].indexOf(tr), j=[...tr.children].indexOf(td);
+      td.addEventListener('mouseenter',()=>{hov=[i,j];render();});
+      td.addEventListener('mouseleave',()=>{hov=null;render();});
+    });
+    $('#easyOut').innerHTML=(hov?
+      'cell ('+(hov[0]+1)+','+(hov[1]+1)+') of A+B  =  '+A[hov[0]][hov[1]]+' + '+B[hov[0]][hov[1]]+'  =  <span class="g">'+(A[hov[0]][hov[1]]+B[hov[0]][hov[1]])+'</span>   — same address, no neighbours involved':
+      'hover a cell of A+B to trace its two parents')+
+      '\nλ·A multiplies every cell by <span class="y">'+nice(gl())+'</span> — the shape never changes';
+  }
+  render();
+});
+
+/* ============ P3: the dance (multiply) ============ */
+window.__demos.push(function(){
+  const host=$('#mmHost'); if(!host)return;
+  const A0=[[1,2],[3,4]], B0=[[5,6],[7,8]];
+  let k=0, swap=false, timer=null;
+  const LR=()=>swap?[B0,A0]:[A0,B0];
+  function render(){
+    const [L,R]=LR(), C=matMul(L,R);
+    const i=Math.floor(Math.min(k,3)/2), j=Math.min(k,3)%2, live=k<4;
+    host.innerHTML=
+      '<span class="mxlab">'+(swap?'B':'A')+' =</span>'+mxHTML(L,{cls:(r)=>live&&r===i?'hot':''})+
+      '<span class="mxlab">·</span><span class="mxlab">'+(swap?'A':'B')+' =</span>'+mxHTML(R,{cls:(r,cc)=>live&&cc===j?'hotr':''})+
+      '<span class="mxlab">=</span>'+mxHTML(C.map((row,r)=>row.map((v,cc)=>r*2+cc<k?nice(v):'·')),
+        {cls:(r,cc)=>(r*2+cc===k&&live)?'piv':(r*2+cc<k?'win':'')});
+    if(live){
+      const p1=L[i][0]*R[0][j], p2=L[i][1]*R[1][j];
+      $('#mmOut').innerHTML='filling cell (row '+(i+1)+', col '+(j+1)+'):\n'+
+        '  <span class="p">row '+(i+1)+'</span> meets <span class="c">column '+(j+1)+'</span>:  '+
+        L[i][0]+'×'+R[0][j]+' + '+L[i][1]+'×'+R[1][j]+' = '+nice(p1)+'+'+nice(p2)+' = <span class="y">'+nice(p1+p2)+'</span>';
+    }else{
+      const other=matMul(LR()[1],LR()[0]);
+      $('#mmOut').innerHTML='done!  '+(swap?'B·A':'A·B')+' = ['+matMul(...LR()).map(r=>r.map(nice).join('  ')).join('  |  ')+']\n'+
+        'other order '+(swap?'A·B':'B·A')+' = ['+other.map(r=>r.map(nice).join('  ')).join('  |  ')+']   <span class="r">different — order matters</span>';
+      stop();
+    }
+  }
+  function step(){if(k<4){k++;render();}}
+  function stop(){if(timer){clearInterval(timer);timer=null;$('#mmPlay').textContent='▶ watch the dance';}}
+  $('#mmPlay').addEventListener('click',function(){
+    if(timer){stop();return;}
+    if(k>=4)k=0;
+    this.textContent='⏸ pause';
+    timer=setInterval(()=>{if(k>=4)stop();else step();},1000);
+    render();
+  });
+  $('#mmStep').addEventListener('click',()=>{stop();step();});
+  $('#mmReset').addEventListener('click',()=>{stop();k=0;render();});
+  $('#mmOrder').addEventListener('click',function(){stop();swap=!swap;k=0;this.classList.toggle('active',swap);render();});
+  render();
+  /* shape handshake */
+  function shapes(){
+    const [m,k1]=$('#shA').value.split('×').map(Number), [k2,n]=$('#shB').value.split('×').map(Number);
+    const ok=k1===k2, back=n===m;
+    $('#shOut').innerHTML=ok?('<span style="color:var(--green)">✓ inner '+k1+'='+k2+' → A·B exists, shape '+m+'×'+n+'</span>'+(back?'':' &nbsp;<span style="color:var(--rose)">(but B·A does not: '+n+'≠'+m+')</span>')):
+      '<span style="color:var(--rose)">✗ inner '+k1+'≠'+k2+' → the dance refuses</span>';
+  }
+  $('#shA').addEventListener('change',shapes);$('#shB').addEventListener('change',shapes);
+  shapes();
+});
+
+/* ============ P3: rules audit ============ */
+window.__demos.push(function(){
+  const btn=$('#ruRoll'); if(!btn)return;
+  let seed=11;
+  const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return Math.floor(seed/2147483648*7)-3;};
+  const show=M=>'['+M.map(r=>r.map(nice).join(' ')).join(' | ')+']';
+  const eq=(X,Y)=>X.every((r,i)=>r.every((v,j)=>Math.abs(v-Y[i][j])<1e-9));
+  function roll(){
+    const A=[[rnd(),rnd()],[rnd(),rnd()]],B=[[rnd(),rnd()],[rnd(),rnd()]],C=[[rnd(),rnd()],[rnd(),rnd()]];
+    const I=[[1,0],[0,1]];
+    const g1=matMul(matMul(A,B),C), g2=matMul(A,matMul(B,C));
+    const d1=matMul(A.map((r,i)=>r.map((v,j)=>v+B[i][j])),C), d2=matMul(A,C).map((r,i)=>r.map((v,j)=>v+matMul(B,C)[i][j]));
+    const ab=matMul(A,B), ba=matMul(B,A);
+    $('#ruOut').innerHTML=
+      'A='+show(A)+'  B='+show(B)+'  C='+show(C)+'\n\n'+
+      'grouping:      (A·B)·C = '+show(g1)+'\n               A·(B·C) = '+show(g2)+'  '+(eq(g1,g2)?'<span class="g">same ✓</span>':'<span class="r">✗</span>')+'\n'+
+      'spreading:     (A+B)·C = '+show(d1)+'\n               A·C+B·C = '+show(d2)+'  '+(eq(d1,d2)?'<span class="g">same ✓</span>':'<span class="r">✗</span>')+'\n'+
+      'do-nothing:    I·A = '+show(matMul(I,A))+'  <span class="g">= A ✓</span>\n'+
+      'order:         A·B = '+show(ab)+'\n               B·A = '+show(ba)+'  '+(eq(ab,ba)?'<span class="y">equal this once — lucky pair, roll again!</span>':'<span class="r">different ✗ — no swapping</span>');
+  }
+  btn.addEventListener('click',roll);
+  roll();
+});
+
+/* ============ P3: the undo button (point cloud) ============ */
+window.__demos.push(function(){
+  const c=$('#ivCanvas'); if(!c)return;
+  const ga=dial('ivA',render), gb=dial('ivB',render), gc=dial('ivC',render), gd=dial('ivD',render);
+  /* a friendly face of points */
+  const HOME=[];
+  for(let i=0;i<26;i++){const t=i/26*Math.PI*2;HOME.push([Math.cos(t),Math.sin(t)]);}
+  HOME.push([-0.38,0.32],[0.38,0.32]);
+  for(let i=0;i<7;i++){const t=-0.5+i/6;HOME.push([t,-0.25-(0.25-t*t)]);}
+  let T=HOME.map(p=>p.slice()), P=HOME.map(p=>p.slice());
+  function det(){return ga()*gd()-gb()*gc();}
+  const cv=canv('ivCanvas',function(ctx,W,H){
+    ctx.clearRect(0,0,W,H);
+    const m=axes(ctx,W,H,-4,4,-4,4);
+    ctx.fillStyle='rgba(152,161,179,.4)';
+    HOME.forEach(p=>{ctx.beginPath();ctx.arc(m.X(p[0]),m.Y(p[1]),2.4,0,7);ctx.fill();});
+    P.forEach((p,i)=>{
+      ctx.fillStyle=i<26?'#4F46E5':(i<28?'#0D9488':'#D97706');
+      ctx.beginPath();ctx.arc(m.X(clamp(p[0],-4.4,4.4)),m.Y(clamp(p[1],-4.4,4.4)),4.4,0,7);ctx.fill();
+    });
+  });
+  (function anim(){
+    let mv=false;
+    P.forEach((p,i)=>{for(let k=0;k<2;k++){const d=T[i][k]-p[k];if(Math.abs(d)>0.002){p[k]+=d*0.09;mv=true;}else p[k]=T[i][k];}});
+    cv.redraw();
+    requestAnimationFrame(anim);
+  })();
+  function render(msg){
+    const d=det(), ok=Math.abs(d)>=0.05;
+    $('#ivOut').innerHTML=
+      'A = ['+nice(ga())+' '+nice(gb())+' | '+nice(gc())+' '+nice(gd())+']\n'+
+      'det A = '+nice(ga())+'×'+nice(gd())+' − '+nice(gb())+'×'+nice(gc())+' = <span class="y">'+nice(Math.round(d*100)/100)+'</span>\n'+
+      (ok?'<span class="g">undo exists ✓</span>  A⁻¹ = (1/det)·[ '+nice(gd())+' '+nice(-gb())+' | '+nice(-gc())+' '+nice(ga())+' ]':
+          '<span class="r">det ≈ 0 → A squashes the face onto a line. Different points now overlap.\nOverlapped points cannot be told apart — NO undo can exist.</span>')+
+      (msg?'\n'+msg:'');
+  }
+  $('#ivGo').addEventListener('click',()=>{
+    const A=[[ga(),gb()],[gc(),gd()]];
+    T=T.map(p=>[A[0][0]*p[0]+A[0][1]*p[1], A[1][0]*p[0]+A[1][1]*p[1]]);
+    render('<span class="c">applied A — the face got transformed</span>');
+  });
+  $('#ivUndo').addEventListener('click',()=>{
+    const d=det();
+    if(Math.abs(d)<0.05){render('<span class="r">refused: with det ≈ 0 the squash lost information — there is nothing to undo WITH.</span>');return;}
+    const inv=[[gd()/d,-gb()/d],[-gc()/d,ga()/d]];
+    T=T.map(p=>[inv[0][0]*p[0]+inv[0][1]*p[1], inv[1][0]*p[0]+inv[1][1]*p[1]]);
+    render('<span class="g">applied A⁻¹ — one transform undone</span>');
+  });
+  $('#ivHome').addEventListener('click',()=>{T=HOME.map(p=>p.slice());render('points reset');});
+  $('#ivNice').addEventListener('click',function(){ga.set(2);gb.set(1);gc.set(1);gd.set(1);
+    $$('#ivNice,#ivSing').forEach(b=>b.classList.remove('active'));this.classList.add('active');render();});
+  $('#ivSing').addEventListener('click',function(){ga.set(1);gb.set(1);gc.set(2);gd.set(2);
+    $$('#ivNice,#ivSing').forEach(b=>b.classList.remove('active'));this.classList.add('active');render();});
+  render();
+});
+
+/* ============ P3: the flip ============ */
+window.__demos.push(function(){
+  const c=$('#trCanvas'); if(!c)return;
+  const A=[[1,2,3],[4,5,6]];
+  let t=0, dir=1, raf=null;
+  const cv=canv('trCanvas',function(ctx,W,H){
+    ctx.clearRect(0,0,W,H);
+    const cs=44, gap=8;
+    const ox=W*0.5-(3*(cs+gap))/2, oy=30;
+    const oxT=W*0.5-(2*(cs+gap))/2, oyT=36;
+    ctx.strokeStyle='#D9A94066';ctx.setLineDash([6,5]);ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(W*0.2,14);ctx.lineTo(W*0.84,H-10);ctx.stroke();ctx.setLineDash([]);
+    const e=t*t*(3-2*t);
+    for(let i=0;i<2;i++)for(let j=0;j<3;j++){
+      const x0=ox+j*(cs+gap), y0=oy+i*(cs+gap);
+      const x1=oxT+i*(cs+gap), y1=oyT+j*(cs+gap);
+      const x=lerp(x0,x1,e), y=lerp(y0,y1,e);
+      ctx.fillStyle='rgba(13,148,136,.12)';
+      ctx.strokeStyle='rgba(13,148,136,.6)';ctx.lineWidth=1.6;
+      ctx.beginPath();ctx.roundRect(x,y,cs,cs,10);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#232A3B';ctx.font='800 16px system-ui';ctx.textAlign='center';
+      ctx.fillText(String(A[i][j]),x+cs/2,y+cs/2+6);ctx.textAlign='left';
+    }
+    ctx.fillStyle='#5B6478';ctx.font='700 13px system-ui';
+    ctx.fillText(t<0.5?'A (2×3)':'Aᵀ (3×2) — rows became columns',14,18);
+  });
+  function tick(){t=clamp(t+0.035*dir,0,1);cv.redraw();if(t>0&&t<1)raf=requestAnimationFrame(tick);else raf=null;}
+  $('#trFlip').addEventListener('click',()=>{dir=t<0.5?1:-1;if(t===0)dir=1;if(t===1)dir=-1;if(!raf)tick();});
+  let seed=23;
+  const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return Math.floor(seed/2147483648*5)-2;};
+  const show=M=>'['+M.map(r=>r.map(nice).join(' ')).join(' | ')+']';
+  $('#trAudit').addEventListener('click',()=>{
+    const Ar=[[rnd(),rnd(),rnd()],[rnd(),rnd(),rnd()]], Br=[[rnd(),rnd()],[rnd(),rnd()],[rnd(),rnd()]];
+    const ab=matMul(Ar,Br), left=matT(ab), right=matMul(matT(Br),matT(Ar));
+    const wrong=matMul(matT(Ar),matT(Br));
+    const same=left.every((r,i)=>r.every((v,j)=>Math.abs(v-right[i][j])<1e-9));
+    $('#trOut').innerHTML='A(2×3)='+show(Ar)+'   B(3×2)='+show(Br)+'\n\n'+
+      '(A·B)ᵀ  = '+show(left)+'\nBᵀ·Aᵀ   = '+show(right)+'   '+(same?'<span class="g">identical ✓ socks &amp; shoes confirmed</span>':'<span class="r">✗</span>')+'\n'+
+      'Aᵀ·Bᵀ   = '+show(wrong)+'   <span class="r">3×3 — wrong shape, wrong everything ✗</span>';
+  });
+  cv.redraw();
+});
+</script>
+<script>
+/* roundRect polyfill for older browsers */
+if(typeof CanvasRenderingContext2D!=='undefined'&&!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    r=Math.min(r||0,w/2,h/2);
+    this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);
+    this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();return this;};
+}
+
+/* ============ P4: column walk ============ */
+window.__demos.push(function(){
+  const c=$('#cwCanvas'); if(!c)return;
+  const COLS=[[1,0],[0,1],[8,2],[-4,12]];
+  const CCOL=['#4F46E5','#0284C7','#7C3AED','#E11D48'];
+  const g=[dial('cw1',render),dial('cw2',render),dial('cw3',render),dial('cw4',render)];
+  function endPt(){const x=g.map(f=>f());return [x[0]+8*x[2]-4*x[3], x[1]+2*x[2]+12*x[3]];}
+  const cv=canv('cwCanvas',function(ctx,W,H){
+    ctx.clearRect(0,0,W,H);
+    const pad=34;
+    const X=v=>pad+(v+25)/90*(W-2*pad), Y=v=>H-pad-(v+16)/46*(H-2*pad);
+    ctx.strokeStyle='#E3DECF';ctx.lineWidth=1;
+    for(let gx=-20;gx<=60;gx+=10){ctx.beginPath();ctx.moveTo(X(gx),pad);ctx.lineTo(X(gx),H-pad);ctx.stroke();}
+    for(let gy=-10;gy<=30;gy+=10){ctx.beginPath();ctx.moveTo(pad,Y(gy));ctx.lineTo(W-pad,Y(gy));ctx.stroke();}
+    /* star */
+    const sx=X(42),sy=Y(8);
+    ctx.fillStyle='#D97706';ctx.shadowColor='#F59E0B';ctx.shadowBlur=12;
+    ctx.beginPath();
+    for(let kk=0;kk<10;kk++){const r=kk%2?4.5:11, an=-Math.PI/2+kk*Math.PI/5;
+      const px=sx+r*Math.cos(an),py=sy+r*Math.sin(an);kk?ctx.lineTo(px,py):ctx.moveTo(px,py);}
+    ctx.closePath();ctx.fill();ctx.shadowBlur=0;
+    ctx.font='800 13px system-ui';ctx.fillStyle='#D97706';
+    if(sx>W-118){ctx.textAlign='right';ctx.fillText('b = (42, 8)',sx-14,sy-8);ctx.textAlign='left';}
+    else ctx.fillText('b = (42, 8)',sx+14,sy-8);
+    /* the walk */
+    let p=[0,0];
+    g.forEach((f,i)=>{
+      const xi=f(), q=[p[0]+xi*COLS[i][0], p[1]+xi*COLS[i][1]];
+      if(Math.abs(xi)>1e-9)arrowOn(ctx,X(p[0]),Y(p[1]),X(q[0]),Y(q[1]),CCOL[i],3);
+      p=q;
+    });
+    const hit=Math.abs(p[0]-42)<1e-9&&Math.abs(p[1]-8)<1e-9;
+    ctx.fillStyle=hit?'#16A34A':'#232A3B';
+    if(hit){ctx.shadowColor='#16A34A';ctx.shadowBlur=14;}
+    ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),6.5,0,7);ctx.fill();ctx.shadowBlur=0;
+  });
+  function render(){
+    cv.redraw();
+    const x=g.map(f=>f()), p=endPt();
+    const hit=Math.abs(p[0]-42)<1e-9&&Math.abs(p[1]-8)<1e-9;
+    $('#cwOut').innerHTML='walk ends at ('+nice(p[0])+', '+nice(p[1])+')'+
+      (hit?'  <span class="g">ON THE TREASURE ✓  recipe: ('+x.map(nice).join(', ')+')</span>':'   target (42, 8) — off by ('+nice(42-p[0])+', '+nice(8-p[1])+')');
+  }
+  $('#cwLand').addEventListener('click',()=>{g[0].set(42);g[1].set(8);g[2].set(0);g[3].set(0);render();});
+  $('#cwGhost').addEventListener('click',()=>{
+    g[0].set(clamp(g[0]()+8,-10,60));g[1].set(clamp(g[1]()+2,-10,30));g[2].set(clamp(g[2]()-1,-8,8));
+    render();
+    $('#cwStick').style.display='block';
+    $('#cwOut').innerHTML+='\n<span class="p">ghost move: dials +8, +2, −1, 0 … and the landing did not budge</span>';
+  });
+  $('#cwReset').addEventListener('click',()=>{g[0].set(10);g[1].set(5);g[2].set(0);g[3].set(0);render();});
+  render();
+});
+
+/* ============ P4: all answers, one formula ============ */
+window.__demos.push(function(){
+  if(!$('#gl1'))return;
+  const g1=dial('gl1',render), g2=dial('gl2',render);
+  function render(){
+    const l1=g1(), l2=g2();
+    const x=[42+8*l1-4*l2, 8+2*l1+12*l2, -l1, -l2];
+    const r1=x[0]+8*x[2]-4*x[3], r2=x[1]+2*x[2]+12*x[3];
+    lamp('glL1',Math.abs(r1-42)<1e-6); lamp('glL2',Math.abs(r2-8)<1e-6);
+    $('#glS1').textContent='→ '+nice(Math.round(r1*100)/100)+' ✓';
+    $('#glS2').textContent='→ '+nice(Math.round(r2*100)/100)+' ✓';
+    $('#glOut').innerHTML='x = ('+x.map(v=>nice(Math.round(v*100)/100)).join(', ')+')\n'+
+      '<span class="g">x changes wildly — the lamps never blink. One formula, endless answers.</span>';
+  }
+  render();
+});
+
+/* ============ P4: safe row moves ============ */
+window.__demos.push(function(){
+  const c=$('#rmCanvas'); if(!c)return;
+  let M=[[1,2,4],[3,1,7]], hist=[], broken=false;
+  const cv=canv('rmCanvas',function(ctx,W,H){
+    ctx.clearRect(0,0,W,H);
+    const m=axes(ctx,W,H,-1,5,-1,5);
+    if(broken){
+      ctx.save();ctx.globalAlpha=.4;ctx.strokeStyle='#7C3AED';ctx.lineWidth=12;ctx.lineCap='round';
+      const a=M[0];ctx.beginPath();ctx.moveTo(m.X(-0.8),m.Y((a[2]-a[0]*-0.8)/a[1]));ctx.lineTo(m.X(4.8),m.Y((a[2]-a[0]*4.8)/a[1]));ctx.stroke();ctx.restore();
+    }
+    lineOn(ctx,m,-1,5,M[0][0],M[0][1],M[0][2],'#0D9488',3.2);
+    if(!broken)lineOn(ctx,m,-1,5,M[1][0],M[1][1],M[1][2],'#D97706',3.2);
+    ctx.fillStyle='#16A34A';ctx.shadowColor='#16A34A';ctx.shadowBlur=13;
+    ctx.beginPath();ctx.arc(m.X(2),m.Y(1),7,0,7);ctx.fill();ctx.shadowBlur=0;
+    ctx.font='800 14px system-ui';ctx.fillText('(2, 1)',m.X(2)+11,m.Y(1)-9);
+  });
+  function render(msg){
+    cv.redraw();
+    $('#rmHost').innerHTML=mxHTML(M,{bar:2});
+    $('#rmOut').innerHTML=
+      'clue 1: '+nice(M[0][0])+'x + '+nice(M[0][1])+'y = '+nice(M[0][2])+'\n'+
+      'clue 2: '+(broken?'<span class="r">0 = 0 — erased!</span>':nice(M[1][0])+'x + '+nice(M[1][1])+'y = '+nice(M[1][2]))+'\n'+
+      'moves: '+(hist.length?hist.join(' → '):'none')+'\n'+
+      (broken?'<span class="r">that move was NOT safe: the answer set exploded from one point to a whole line.\nThat is why scale-by-zero is banned.</span>':
+        (msg||'')+(hist.length?'\n<span class="g">each line only pivots AROUND (2,1) — the answer is bolted down</span>':''));
+  }
+  $('#rmSwap').addEventListener('click',()=>{if(broken)return;M=[M[1],M[0]];hist.push('swap');render('lines traded colours — same two clues');});
+  $('#rmScale').addEventListener('click',()=>{if(broken)return;M[1]=M[1].map(v=>2*v);hist.push('R₂×2');render('same line, louder voice — both sides doubled');});
+  $('#rmAdd').addEventListener('click',()=>{if(broken)return;M[1]=M[1].map((v,j)=>v-3*M[0][j]);hist.push('R₂−3R₁');render('clue 2 rotated — around the one point it shares with clue 1');});
+  $('#rmZero').addEventListener('click',()=>{if(broken)return;M[1]=[0,0,0];hist.push('R₂×0');broken=true;render();});
+  $('#rmReset').addEventListener('click',()=>{M=[[1,2,4],[3,1,7]];hist=[];broken=false;render();});
+  render();
+});
+
+/* ============ P4: THE CLEANING GAME ============ */
+window.__demos.push(function(){
+  const host=$('#gmHost'); if(!host)return;
+  const START=[[1,1,1,3],[1,-1,2,2],[0,1,1,2]];
+  let M=START.map(r=>r.slice()), hist=[], moves=0, won=false;
+  const gk=dial('gmK',()=>{});
+  const lead=r=>{for(let j=0;j<3;j++)if(Math.abs(r[j])>1e-9)return j;return 99;};
+  function stairInfo(){
+    const leads=M.map(lead);
+    let ok=true;
+    for(let i=1;i<3;i++){ if(leads[i]!==99&&leads[i]<=leads[i-1]) ok=false; if(leads[i-1]===99&&leads[i]!==99) ok=false; }
+    const contra=M.some(r=>lead(r)===99&&Math.abs(r[3])>1e-9);
+    const clean=[[1,0],[2,0],[2,1]].filter(([i,j])=>Math.abs(M[i][j])<1e-9).length;
+    return {ok:ok&&!contra,clean,contra};
+  }
+  function render(msg){
+    const info=stairInfo();
+    host.innerHTML=mxHTML(M.map(r=>r.map(v=>Math.round(v*100)/100)),{bar:3,cls:(i,j)=>{
+      if(j<3&&lead(M[i])===j)return 'piv';
+      if(j<3&&j<lead(M[i]))return 'dim';
+      return '';}});
+    $('#gmMeterTxt').textContent=info.clean+' / 3 cells cleaned'+(info.ok?' — STAIRCASE!':'');
+    if(info.ok&&!won){
+      won=true;
+      /* generic back-substitution */
+      const rows=M.filter(r=>lead(r)!==99).sort((a,b)=>lead(a)-lead(b));
+      const x=[0,0,0]; let lines='';
+      for(let i=rows.length-1;i>=0;i--){
+        const r=rows[i], j=lead(r);
+        let s=r[3]; for(let k2=j+1;k2<3;k2++)s-=r[k2]*x[k2];
+        x[j]=s/r[j];
+        lines+='row '+(i+1)+' → x'+'₁₂₃'[j]+' = <span class="g">'+nice(Math.round(x[j]*100)/100)+'</span>\n';
+      }
+      $('#gmOut').innerHTML='<span class="g">🎉 STAIRCASE BUILT in '+moves+' move'+(moves===1?'':'s')+' (the textbook takes 3)</span>\n\n'+
+        'now the answers just fall out, bottom row first:\n'+lines+
+        '\nsolution ('+x.map(v=>nice(Math.round(v*100)/100)).join(', ')+') — check it against the original clues. All green.\nYou just ran GAUSSIAN ELIMINATION.';
+    }else if(!info.ok){
+      won=false;
+      $('#gmOut').innerHTML=(msg||'clean the three cells under the staircase — pivots are amber')+
+        '\nmoves so far: '+moves;
+    }
+  }
+  function idx(sel){return parseInt($(sel).value.slice(1),10)-1;}
+  $('#gmApply').addEventListener('click',()=>{
+    const kind=$('#gmKind').value, i=idx('#gmI'), j=idx('#gmJ'), k=gk();
+    if(kind==='swap'){
+      if(i===j){render('<span class="r">pick two different rows to swap</span>');return;}
+      hist.push(M.map(r=>r.slice()));[M[i],M[j]]=[M[j],M[i]];moves++;render('swapped R'+(i+1)+' ↔ R'+(j+1));
+    }else if(kind==='scale'){
+      if(Math.abs(k)<1e-9){render('<span class="r">REFUSED. Scaling by 0 erases a clue — information lost, not reversible. The one illegal move.</span>');return;}
+      hist.push(M.map(r=>r.slice()));M[i]=M[i].map(v=>k*v);moves++;render('scaled R'+(i+1)+' by '+nice(k));
+    }else{
+      if(i===j){render('<span class="r">use two different rows (a row minus itself would erase it)</span>');return;}
+      hist.push(M.map(r=>r.slice()));M[i]=M[i].map((v,c2)=>v-k*M[j][c2]);moves++;
+      render('did R'+(i+1)+' ← R'+(i+1)+' − '+nice(k)+'·R'+(j+1));
+    }
+  });
+  $('#gmHint').addEventListener('click',()=>{
+    let h='';
+    if(Math.abs(M[0][0])<1e-9)h='no pivot in the top-left — swap R1 with a row that starts non-zero';
+    else if(Math.abs(M[1][0])>1e-9)h='clear cell (row 2, col 1):  R2 ← R2 − ('+nice(Math.round(M[1][0]/M[0][0]*100)/100)+')·R1';
+    else if(Math.abs(M[2][0])>1e-9)h='clear cell (row 3, col 1):  R3 ← R3 − ('+nice(Math.round(M[2][0]/M[0][0]*100)/100)+')·R1';
+    else if(Math.abs(M[1][1])<1e-9&&Math.abs(M[2][1])>1e-9)h='row 2 lost its column-2 pivot — swap R2 ↔ R3';
+    else if(Math.abs(M[2][1])>1e-9)h='clear cell (row 3, col 2):  R3 ← R3 − ('+nice(Math.round(M[2][1]/M[1][1]*100)/100)+')·R2   (negative k adds)';
+    else h='staircase done — you should be seeing the win screen!';
+    render('💡 hint: '+h);
+  });
+  $('#gmUndo').addEventListener('click',()=>{if(hist.length){M=hist.pop();moves++;won=false;render('undone (undo also counts as a move — cleaning has a cost)');}});
+  $('#gmReset').addEventListener('click',()=>{M=START.map(r=>r.slice());hist=[];moves=0;won=false;render('fresh start');});
+  render();
+});
+
+/* ============ P4: boss level stepper ============ */
+window.__demos.push(function(){
+  const host=$('#bsHost'); if(!host)return;
+  const R=(k,b)=>({k,b});
+  const STEPS=[
+    {rows:[[-2,4,-2,-1,4],[4,-8,3,-3,1],[1,-2,1,-1,1],[1,-2,0,-3,4]],rhs:[R(0,-3),R(0,2),R(0,0),R(1,0)],piv:[],
+     op:'the raw [A | b] — four clues, five dials',note:'goal: a staircase, using only the three safe moves'},
+    {rows:[[1,-2,1,-1,1],[4,-8,3,-3,1],[-2,4,-2,-1,4],[1,-2,0,-3,4]],rhs:[R(0,0),R(0,2),R(0,-3),R(1,0)],piv:[[0,0]],
+     op:'swap R₁ ↔ R₃',note:'a clean 1 up top makes a friendly first pivot'},
+    {rows:[[1,-2,1,-1,1],[0,0,-1,1,-3],[0,0,0,-3,6],[0,0,-1,-2,3]],rhs:[R(0,0),R(0,2),R(0,-3),R(1,0)],piv:[[0,0]],
+     op:'R₂←R₂−4R₁ · R₃←R₃+2R₁ · R₄←R₄−R₁',note:'the pivot sweeps its column clean below'},
+    {rows:[[1,-2,1,-1,1],[0,0,-1,1,-3],[0,0,0,-3,6],[0,0,0,0,0]],rhs:[R(0,0),R(0,2),R(0,-3),R(1,1)],piv:[[0,0],[1,2],[2,3]],
+     op:'R₄ ← R₄ − R₂ − R₃',note:'row 4 empties — its demand becomes a+1 and turns into a pure TEST'},
+    {rows:[[1,-2,1,-1,1],[0,0,1,-1,3],[0,0,0,1,-2],[0,0,0,0,0]],rhs:[R(0,0),R(0,-2),R(0,1),R(1,1)],piv:[[0,0],[1,2],[2,3]],
+     op:'R₂×(−1) · R₃×(−⅓)',note:'pivots scaled to 1 — the staircase stands'}
+  ];
+  let s=0;
+  const ga=dial('bsA',render);
+  function render(){
+    const a=ga(), st=STEPS[s];
+    host.innerHTML='<div><div style="font-family:var(--mono);font-size:13px;color:var(--violet);font-weight:700;margin-bottom:6px">'+st.op+'</div>'+
+      mxHTML(st.rows.map((r,i)=>r.concat([nice(st.rhs[i].k*a+st.rhs[i].b)])),{bar:5,cls:(i,j)=>{
+        if(st.piv.some(p=>p[0]===i&&p[1]===j))return 'piv';
+        if(s===STEPS.length-1&&i===3&&j===5)return Math.abs(a+1)<1e-9?'win':'bad';
+        return '';}})+'</div>';
+    let msg='move '+s+' / '+(STEPS.length-1)+' · '+st.note;
+    if(s===STEPS.length-1){
+      msg+='\n\nbottom row says:  0 = a+1 = <span class="y">'+nice(a+1)+'</span>\n'+
+        (Math.abs(a+1)<1e-9?'<span class="g">0 = 0 → harmless echo → answers exist (two free dials: x₂ and x₅ → ∞)</span>':
+         '<span class="r">0 = '+nice(a+1)+' is impossible → the clues fight → 0 answers</span>');
+    }
+    $('#bsOut').innerHTML=msg;
+  }
+  $('#bsNext').addEventListener('click',()=>{if(s<STEPS.length-1)s++;render();});
+  $('#bsBack').addEventListener('click',()=>{if(s>0)s--;render();});
+  $('#bsEnd').addEventListener('click',()=>{s=STEPS.length-1;render();});
+  $('#bsReset').addEventListener('click',()=>{s=0;render();});
+  render();
+});
+
+/* ============ P4: typo audit ============ */
+window.__demos.push(function(){
+  if(!$('#tyBad'))return;
+  const E=[[-2,4,-2,-1,4],[4,-8,3,-3,1],[1,-2,1,-1,1],[1,-2,0,-3,4]];
+  const dot=(r,x)=>r.reduce((s,v,i)=>s+v*x[i],0);
+  function audit(v,name){
+    let out='auditing '+name+' = ('+v.join(', ')+')\na silent move must score 0 on every clue:\n\n', good=true;
+    E.forEach((r,i)=>{const val=dot(r,v), ok=Math.abs(val)<1e-9; if(!ok)good=false;
+      out+='clue '+(i+1)+':  '+nice(val)+'  '+(ok?'<span class="g">✓</span>':'<span class="r">✗ leaks!</span>')+'\n';});
+    $('#tyOut').innerHTML=out+(good?'\n<span class="g">silent — a genuine free direction of the answer family</span>':
+      '\n<span class="r">NOT silent — it shifts the demands, so the slide’s print is a typo. Trust your audit, not the page.</span>');
+  }
+  $('#tyBad').addEventListener('click',()=>audit([2,0,-2,1,1],'the slide’s vector'));
+  $('#tyGood').addEventListener('click',()=>audit([2,0,-1,2,1],'the fixed vector'));
+});
+
+/* ============ P4: RREF (deluxe staircase) ============ */
+window.__demos.push(function(){
+  const host=$('#rrHost'); if(!host)return;
+  const M=[[1,3,0,0,3],[0,0,1,0,9],[0,0,0,1,-4]];
+  const piv={0:0,1:2,2:3};
+  let focus=-1;
+  function render(){
+    host.innerHTML=mxHTML(M,{cls:(i,j)=>{
+      if(piv[i]===j)return 'piv';
+      if(j===focus)return 'hot';
+      if(j===1||j===4)return 'dim';
+      return '';}});
+  }
+  function setTab(btn){$$('#rrShow,#rrM1,#rrM2').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  $('#rrShow').addEventListener('click',function(){setTab(this);focus=-1;render();
+    $('#rrOut').innerHTML='amber = pivots (columns 1, 3, 4 — each a clean 1, alone in its column)\ngrey = free columns (2 and 5) — the dials nobody locked';});
+  $('#rrM1').addEventListener('click',function(){setTab(this);focus=1;render();
+    $('#rrOut').innerHTML='free column 2 reads (3, 0, 0) = 3 × column 1\nbuild it one way, unbuild the other:  3·c₁ − 1·c₂ = 0\n→ silent move <span class="g">(3, −1, 0, 0, 0)</span>   check any row: row 1 gives 3 − 3 = 0 ✓';});
+  $('#rrM2').addEventListener('click',function(){setTab(this);focus=4;render();
+    $('#rrOut').innerHTML='free column 5 reads (3, 9, −4) = 3·c₁ + 9·c₃ − 4·c₄\ncancel it:  3·c₁ + 9·c₃ − 4·c₄ − 1·c₅ = 0\n→ silent move <span class="g">(3, 0, 9, −4, −1)</span>   rows: 3+3(−1)=0 ✓  9+9(−1)=0 ✓  −4−4(−1)=0 ✓\n\nall answers of A·x = 0:   x = λ₁(3,−1,0,0,0) + λ₂(3,0,9,−4,−1) — one silent move per free column, always';});
+  $('#rrShow').click();
+});
+
+/* ============ P4: [A|I] recorder ============ */
+window.__demos.push(function(){
+  const host=$('#aiHost'); if(!host)return;
+  const STEPS=[
+    {m:[[2,1,1,0],[1,1,0,1]],op:'start: [A | I] — recorder reads “nothing done yet”'},
+    {m:[[1,1,0,1],[2,1,1,0]],op:'swap R₁ ↔ R₂ — friendly 1 on top'},
+    {m:[[1,1,0,1],[0,-1,1,-2]],op:'R₂ ← R₂ − 2R₁ — staircase on the left'},
+    {m:[[1,1,0,1],[0,1,-1,2]],op:'R₂ × (−1) — pivots become 1'},
+    {m:[[1,0,1,-1],[0,1,-1,2]],op:'R₁ ← R₁ − R₂ — clear ABOVE too: left half is I'}
+  ];
+  let s=0;
+  function render(extra){
+    const done=s===STEPS.length-1;
+    host.innerHTML='<div><div style="font-family:var(--mono);font-size:13px;color:var(--violet);font-weight:700;margin-bottom:6px">'+STEPS[s].op+'</div>'+
+      mxHTML(STEPS[s].m,{bar:2,cls:(i,j)=>done&&j>=2?'win':''})+'</div>';
+    $('#aiOut').innerHTML='move '+s+' / '+(STEPS.length-1)+
+      (done?'\n<span class="g">left half = I → the recorder holds A⁻¹ = [1 −1 | −1 2]\nexactly the Part-3 formula answer — rebuilt by moves alone</span>':'\nroute: A → staircase → ones on the diagonal → I')+
+      (extra||'');
+  }
+  $('#aiNext').addEventListener('click',()=>{if(s<STEPS.length-1)s++;render();});
+  $('#aiBack').addEventListener('click',()=>{if(s>0)s--;render();});
+  $('#aiReset').addEventListener('click',()=>{s=0;render();});
+  $('#aiCheck').addEventListener('click',()=>{
+    render('\n\nverify A·A⁻¹:  row 1: 2×1+1×(−1)=<span class="g">1</span>, 2×(−1)+1×2=<span class="g">0</span>\n'+
+      '               row 2: 1×1+1×(−1)=<span class="g">0</span>, 1×(−1)+1×2=<span class="g">1</span>   → I ✓ it truly undoes');
+  });
+  render();
+});
+
+/* ============ P5: quiz ============ */
+window.__demos.push(function(){
+  const cards=$$('.qcard[data-q]'); if(!cards.length)return;
+  const WHY={
+    1:'An all-zero left side is a pure test: it demands 0 = right side. 0 ≠ 4, so the clues contradict each other — fate 0.',
+    2:'Scaling by 0 turns a clue into 0 = 0 — erased. Information lost can never be restored, so the move is banned. Swap and add are always undoable.',
+    3:'A pivot locks its column’s dial. Columns 2 and 5 have no pivot, so nothing locks x₂ and x₅ — they are the free dials (and each donates one silent move).',
+    4:'Flipping files the same bills under swapped addresses, so the walk must use B’s rows first: (A·B)ᵀ = Bᵀ·Aᵀ. Socks and shoes.',
+    5:'det A = 0 means A squashes the picture flat — different points overlap. Overlap = lost information = no possible undo. Such a matrix is called singular.'
+  };
+  let score=0, answered=0;
+  cards.forEach(card=>{
+    const q=card.dataset.q;
+    $$('.qopt',card).forEach(btn=>btn.addEventListener('click',function(){
+      if(card.classList.contains('done'))return;
+      card.classList.add('done');
+      answered++;
+      const right=this.dataset.ok==='1';
+      if(right){this.classList.add('right');score++;}
+      else{this.classList.add('wrong');$$('.qopt',card).forEach(b=>{if(b.dataset.ok==='1')b.classList.add('right');});}
+      $('#qw'+q).textContent=WHY[q];
+      $('#quizScore').innerHTML='score: '+score+' / 5'+(answered===5?(score===5?'  <span class="g">— perfect. You own this lecture. 🏆</span>':score>=3?'  <span class="y">— solid! peek at the explanations you missed</span>':'  <span class="r">— scroll back up and play the labs again; it will stick</span>'):'');
+    }));
+  });
+});
+
+
+/* ============ PV-a: the tea-stall vector ============ */
+window.__demos.push(function(){
+  if(!$('#vsA'))return;
+  const names=['teas','coffees','samosas','sandwiches'];
+  const gA=dial('vsA',render), gB=dial('vsB',render), gC=dial('vsC',render), gD=dial('vsD',render);
+  let k=1;
+  $('#vsSix').addEventListener('click',()=>{k=6;render();});
+  $('#vsBack').addEventListener('click',()=>{k=1;render();});
+  function render(){
+    const m=[gA(),gB(),gC(),gD()];
+    let html=mxHTML(m.map(v=>[v]),{cls:(i)=>i===2?'hot':''});
+    if(k!==1){
+      html='<span class="mxlab">6 ×</span>'+html+'<span class="mxlab">=</span>'+
+           mxHTML(m.map(v=>[v*6]),{cls:(i)=>i===2?'hot':''});
+    }
+    $('#vsMx').innerHTML=html;
+    $('#vsDim').textContent='4 slots  →  this vector lives in R⁴';
+    const shown=m.map(v=>v*k);
+    $('#vsOut').innerHTML=
+      'order fixed as: <span class="c">tea, coffee, samosa, sandwich</span>\n'+
+      'm = ('+shown.join(', ')+')\n'+
+      'slot 3 = <span class="y">'+shown[2]+'</span>  → always samosas, never anything else\n'+
+      'dimension = <span class="p">4</span>   (how many slots, not how big the numbers are)'+
+      (k===6?'\n<span class="g">scaled by 6 — every slot multiplied, none left behind</span>':'');
+  }
+  render();
+});
+
+/* ============ PV-b: add and scale, drawn ============ */
+window.__demos.push(function(){
+  if(!$('#vaCv'))return;
+  const gU1=dial('vaU1',go), gU2=dial('vaU2',go), gV1=dial('vaV1',go), gV2=dial('vaV2',go), gL=dial('vaL',go);
+  const cv=canv('vaCv',draw);
+  function draw(ctx,W,H){
+    ctx.clearRect(0,0,W,H);
+    const u=[gU1(),gU2()], v=[gV1(),gV2()], L=gL();
+    const s=[u[0]+v[0],u[1]+v[1]], lu=[u[0]*L,u[1]*L];
+    let R=6;
+    [u,v,s,lu].forEach(p=>{R=Math.max(R,Math.abs(p[0])+1,Math.abs(p[1])+1);});
+    R=Math.ceil(R);
+    const m=axes(ctx,W,H,-R,R,-R,R);
+    const P=p=>[m.X(p[0]),m.Y(p[1])];
+    const O=P([0,0]);
+    ctx.font='700 13px system-ui,sans-serif';
+    function tag(p,txt,col,dx,dy){
+      const q=P(p); ctx.fillStyle=col;
+      ctx.fillText(txt,q[0]+(dx||8),q[1]+(dy||-8));
+    }
+    if(Math.abs(L-1)>1e-9){
+      ctx.save();ctx.setLineDash([7,6]);
+      arrowOn(ctx,O[0],O[1],...P(lu),'#E11D48',3);
+      ctx.restore();
+      tag(lu,'λu = ('+nice(lu[0])+', '+nice(lu[1])+')','#E11D48',8,18);
+    }
+    arrowOn(ctx,...O,...P(u),'#0284C7',3.4);
+    tag(u,'u = ('+u[0]+', '+u[1]+')','#0284C7',8,20);
+    arrowOn(ctx,...P(u),...P(s),'#16A34A',3.4);
+    tag(v,'','#16A34A');
+    ctx.fillStyle='#16A34A';
+    const mid=P([(u[0]+s[0])/2,(u[1]+s[1])/2]);
+    ctx.fillText('then v = ('+v[0]+', '+v[1]+')',mid[0]+10,mid[1]-6);
+    arrowOn(ctx,...O,...P(s),'#7C3AED',3.6);
+    tag(s,'u + v = ('+s[0]+', '+s[1]+')','#7C3AED',-4,-14);
+    ctx.save();ctx.globalAlpha=.35;ctx.setLineDash([4,5]);
+    arrowOn(ctx,...O,...P(v),'#16A34A',2);
+    arrowOn(ctx,...P(v),...P(s),'#0284C7',2);
+    ctx.restore();
+  }
+  function go(){
+    if(cv)cv.redraw();
+    const u=[gU1(),gU2()], v=[gV1(),gV2()], L=gL();
+    $('#vaOut').innerHTML=
+      'u + v = ('+u[0]+'+'+v[0]+',  '+u[1]+'+'+v[1]+') = <span class="p">('+(u[0]+v[0])+', '+(u[1]+v[1])+')</span>\n'+
+      'slot by slot — the two slots never mix\n\n'+
+      nice(L)+' · u = ('+nice(L)+'×'+u[0]+',  '+nice(L)+'×'+u[1]+') = <span class="r">('+nice(L*u[0])+', '+nice(L*u[1])+')</span>\n'+
+      (Math.abs(L)<1e-9?'λ = 0 — you stay home. That is the zero vector.'
+       :L<0?'λ is negative — same road, walked backwards'
+       :L<1?'λ under 1 — same direction, shorter walk'
+       :L>1?'λ over 1 — same direction, longer walk':'λ = 1 — u itself, untouched');
+  }
+  go();
+});
+
+/* ============ PV-c: the class register as a matrix ============ */
+window.__demos.push(function(){
+  if(!$('#mxTab'))return;
+  const SUB=['Maths','Physics','Coding'];
+  const WHO=['Asha','Bilal','Chitra','Dev'];
+  const A=[[72,65,88],[61,74,90],[95,88,72],[54,60,55]];
+  let mode='row', sel=null;
+  function build(){
+    let h='<tr><th></th>'+SUB.map(s=>'<th>'+s+'</th>').join('')+'</tr>';
+    A.forEach((r,i)=>{
+      h+='<tr><td class="rlab">'+WHO[i]+'</td>';
+      r.forEach((v,j)=>{
+        let cls='';
+        if(sel){ if(mode==='row'&&sel[0]===i)cls='rowhi'; if(mode==='col'&&sel[1]===j)cls='colhi'; }
+        h+='<td class="'+cls+'" data-i="'+i+'" data-j="'+j+'">'+v+'</td>';
+      });
+      h+='</tr>';
+    });
+    $('#mxTab').innerHTML=h;
+    $$('#mxTab td[data-i]').forEach(td=>td.addEventListener('click',()=>{
+      sel=[+td.dataset.i,+td.dataset.j]; build(); say();
+    }));
+  }
+  function say(){
+    if(!sel){$('#mxSay').innerHTML='Tap a cell.';$('#mxOut').textContent='';return;}
+    const [i,j]=sel, v=A[i][j];
+    $('#mxSay').innerHTML='<b>a<sub>'+(i+1)+(j+1)+'</sub> = '+v+'</b><br>'+
+      'row '+(i+1)+' (<b>'+WHO[i]+'</b>), column '+(j+1)+' (<b>'+SUB[j]+'</b>).<br>'+
+      '<span style="color:var(--soft);font-size:13.5px">Row first, then column. a<sub>'+(j+1)+(i+1)+'</sub> would be a different cell entirely.</span>';
+    if(mode==='row'){
+      $('#mxOut').innerHTML='row '+(i+1)+' = <span class="y">('+A[i].join(', ')+')</span>\n'+
+        'everything about <span class="c">'+WHO[i]+'</span> — one student, one vector\n\n'+
+        'this matrix is <span class="p">4 × 3</span>: 4 rows, 3 columns (rows first, always)';
+    }else{
+      const col=A.map(r=>r[j]);
+      $('#mxOut').innerHTML='column '+(j+1)+' = <span class="g">('+col.join(', ')+')</span>\n'+
+        '<span class="c">'+SUB[j]+'</span> marks for the whole class — one subject, one vector\n\n'+
+        'this matrix is <span class="p">4 × 3</span>: 4 rows, 3 columns (rows first, always)';
+    }
+  }
+  $('#mxRow').addEventListener('click',()=>{mode='row';$('#mxRow').classList.add('active');$('#mxCol').classList.remove('active');build();say();});
+  $('#mxCol').addEventListener('click',()=>{mode='col';$('#mxCol').classList.add('active');$('#mxRow').classList.remove('active');build();say();});
+  build(); sel=[1,2]; build(); say();
+});
+
+/* ============ PV-d: paint a photo, read the matrix ============ */
+window.__demos.push(function(){
+  if(!$('#pxG'))return;
+  const N=8, px=Array.from({length:N},()=>Array(N).fill(0));
+  const g=$('#pxG');
+  g.innerHTML=Array.from({length:N*N},(_,k)=>'<i data-k="'+k+'"></i>').join('');
+  const cells=$$('#pxG i');
+  function paint(){
+    let ink=0, nh='';
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+      const v=px[i][j], k=i*N+j;
+      cells[k].style.background='rgba(35,42,59,'+(v/9)+')';
+      if(v)ink++;
+    }
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+      const v=px[i][j];
+      nh+='<span class="'+(v?'on':'')+'">'+v+'</span>';
+    }
+    $('#pxN').innerHTML=nh;
+    $('#pxOut').innerHTML='8 rows × 8 columns = <span class="p">64 numbers</span>\n'+
+      '<span class="y">'+ink+'</span> squares have ink, '+(64-ink)+' are blank paper\n'+
+      'flatten it into one long list and you get a vector in R⁶⁴';
+  }
+  let down=false, mode=9;
+  function hit(el){
+    if(!el||!el.dataset||el.dataset.k===undefined)return;
+    const k=+el.dataset.k, i=(k/N)|0, j=k%N;
+    if(px[i][j]!==mode){px[i][j]=mode;paint();}
+  }
+  g.addEventListener('pointerdown',e=>{
+    const el=e.target.closest('i'); if(!el)return;
+    const k=+el.dataset.k, i=(k/N)|0, j=k%N;
+    mode=px[i][j]?0:9; down=true; hit(el);
+    if(g.setPointerCapture&&e.pointerId!==undefined){try{g.setPointerCapture(e.pointerId);}catch(_){}}
+    e.preventDefault();
+  });
+  g.addEventListener('pointermove',e=>{
+    if(!down)return;
+    hit(document.elementFromPoint(e.clientX,e.clientY));
+    e.preventDefault();
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>g.addEventListener(ev,()=>{down=false;}));
+  window.addEventListener('pointerup',()=>{down=false;});
+  $('#pxClear').addEventListener('click',()=>{for(let i=0;i<N;i++)px[i].fill(0);paint();});
+  $('#pxSeven').addEventListener('click',()=>{
+    const P=[[0,0,0,0,0,0,0,0],[0,9,9,9,9,9,8,0],[0,0,0,0,0,7,9,0],[0,0,0,0,6,9,2,0],
+             [0,0,0,5,9,3,0,0],[0,0,4,9,4,0,0,0],[0,0,8,9,1,0,0,0],[0,0,0,0,0,0,0,0]];
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++)px[i][j]=P[i][j];
+    paint();
+  });
+  $('#pxSeven').click();
+});
+
+/* ============ PV-e: the words for data, and one-hot ============ */
+window.__demos.push(function(){
+  if(!$('#dsTab'))return;
+  const H=['age','km run','owners'];
+  const WHO=['Scooter A','Scooter B','Scooter C','Scooter D'];
+  const D=[[2,12,1],[5,30,2],[1,6,1],[7,44,3]];
+  const Y=[48,30,55,22];
+  let hi=null;
+  function build(){
+    let h='<tr><th></th>'+H.map(s=>'<th>'+s+'</th>').join('')+'<th style="color:var(--violet)">price</th></tr>';
+    D.forEach((r,i)=>{
+      h+='<tr><td class="rlab" data-row="'+i+'" style="cursor:pointer">'+WHO[i]+'</td>';
+      r.forEach((v,j)=>{
+        let c='';
+        if(hi&&hi.t==='row'&&hi.i===i)c='rowhi';
+        if(hi&&hi.t==='col'&&hi.j===j)c='colhi';
+        h+='<td class="'+c+'" data-i="'+i+'" data-j="'+j+'">'+v+'</td>';
+      });
+      h+='<td class="tgt'+(hi&&hi.t==='row'&&hi.i===i?' rowhi':'')+(hi&&hi.t==='tgt'?' rowhi':'')+'" data-tgt="'+i+'">'+Y[i]+'</td></tr>';
+    });
+    $('#dsTab').innerHTML=h;
+    $$('#dsTab td[data-i]').forEach(td=>td.addEventListener('click',()=>{
+      hi={t:'cell',i:+td.dataset.i,j:+td.dataset.j};build();say();}));
+    $$('#dsTab td[data-row]').forEach(td=>td.addEventListener('click',()=>{
+      hi={t:'row',i:+td.dataset.row};build();say();}));
+    $$('#dsTab td[data-tgt]').forEach(td=>td.addEventListener('click',()=>{
+      hi={t:'tgt'};build();say();}));
+    $$('#dsTab th').forEach((th,k)=>{
+      if(k===0)return;
+      th.style.cursor='pointer';
+      th.addEventListener('click',()=>{
+        if(k===4){hi={t:'tgt'};}else{hi={t:'col',j:k-1};}
+        build();say();});
+    });
+  }
+  const CHIP=a=>a.map(s=>'<span class="chip">'+s+'</span>').join('');
+  function say(){
+    if(!hi){$('#dsSay').innerHTML='Tap any part of the table and I\'ll tell you every name it goes by.';return;}
+    if(hi.t==='row'||hi.t==='cell'){
+      const i=hi.i;
+      let s='<b>One row</b> — everything measured about <b>'+WHO[i]+'</b>: the vector ('+D[i].join(', ')+').<br>'+
+        '<span style="color:var(--soft);font-size:13.5px">Other names for exactly this thing:</span><br>'+
+        CHIP(['record','example','observation','sample','instance','data point']);
+      if(hi.t==='cell'){
+        s+='<br><br><b>You tapped column '+(hi.j+1)+' too</b> — <b>'+H[hi.j]+'</b>, value '+D[i][hi.j]+
+           '. Written x<sub>'+(i+1)+(hi.j+1)+'</sub>: row first, column second.';
+      }
+      $('#dsSay').innerHTML=s;
+    }else if(hi.t==='col'){
+      const j=hi.j;
+      $('#dsSay').innerHTML='<b>One column</b> — <b>'+H[j]+'</b> measured across every scooter: the vector ('+
+        D.map(r=>r[j]).join(', ')+').<br>'+
+        '<span style="color:var(--soft);font-size:13.5px">Other names for exactly this thing:</span><br>'+
+        CHIP(['feature','attribute','variable','predictor','input','covariate']);
+    }else{
+      $('#dsSay').innerHTML='<b>The target</b> — the answer you are trying to predict: <b>y</b> = ('+Y.join(', ')+').<br>'+
+        '<span style="color:var(--soft);font-size:13.5px">Other names for exactly this thing:</span><br>'+
+        CHIP(['label','output','response','ground truth','dependent variable','y'])+
+        '<br><br><span style="color:var(--soft);font-size:13.5px">The features make the matrix <b>X</b> (4 × 3). The targets make the vector <b>y</b> (4 entries). Always one target per row.</span>';
+    }
+  }
+  build(); hi={t:'row',i:1}; build(); say();
+
+  /* one-hot */
+  if(!$('#ohCity'))return;
+  const gAge=dial('ohAge',oh);
+  $('#ohCity').addEventListener('change',oh);
+  $('#ohIns').addEventListener('change',oh);
+  function oh(){
+    const c=$('#ohCity').value, ins=$('#ohIns').value==='yes'?1:0, age=gAge();
+    const row=[c==='Delhi'?1:0, c==='Mumbai'?1:0, c==='Pune'?1:0, ins, age];
+    $('#ohOut').innerHTML=
+      '<div style="font-family:var(--mono);font-size:12px;color:var(--soft);margin-bottom:4px">'+
+      'is&nbsp;Delhi &nbsp;·&nbsp; is&nbsp;Mumbai &nbsp;·&nbsp; is&nbsp;Pune &nbsp;·&nbsp; insured &nbsp;·&nbsp; age</div>'+
+      mxHTML([row],{cls:(i,j)=>j<3?(row[j]?'win':'dim'):''})+
+      '<div style="font-size:13.5px;color:var(--soft);margin-top:6px">3 written columns became <b>5 numeric ones</b>. '+
+      'Exactly one of the first three is hot — that is the whole trick.</div>';
+  }
+  oh();
+});
+
+/* ============ PV-f: Xw, and why regression exists ============ */
+window.__demos.push(function(){
+  if(!$('#pwW1'))return;
+  const S=[[8,2],[10,4],[12,3],[6,2]], Y=[28,38,45,21], MAX=60;
+  const g1=dial('pwW1',render), g2=dial('pwW2',render);
+  $('#pwReset').addEventListener('click',()=>{g1.set(1);g2.set(1);render();});
+  $('#pwBest').addEventListener('click',()=>{g1.set(3.5);g2.set(0.7);render();});
+  function render(){
+    const w1=g1(), w2=g2();
+    let sse=0, hits=0;
+    S.forEach((r,i)=>{
+      const p=w1*r[0]+w2*r[1], d=p-Y[i];
+      sse+=d*d; if(Math.abs(d)<=0.5)hits++;
+      $('#pwF'+i).style.width=clamp(p/MAX*100,0,100)+'%';
+      $('#pwT'+i).style.left=(Y[i]/MAX*100)+'%';
+      $('#pwN'+i).innerHTML='<b>'+nice(Math.round(p*10)/10)+'</b> vs '+Y[i];
+      lamp('pwL'+i,Math.abs(d)<=0.5);
+      $('#pwF'+i).style.background=Math.abs(d)<=0.5
+        ? 'linear-gradient(90deg,#34D399,#16A34A)'
+        : 'linear-gradient(90deg,#7DD3FC,#0284C7)';
+    });
+    sse=Math.round(sse*100)/100;
+    let msg;
+    if(hits===4) msg='<span class="g">all four — but look closely, that cannot happen here.</span>';
+    else if(sse<5) msg='<span class="g">about as close as two dials can get. 4 clues, 2 unknowns — something must give.</span>';
+    else if(hits>=2) msg='<span class="y">'+hits+' exact. Now try to keep them while fixing the others… you will find you cannot.</span>';
+    else msg='keep going — bigger w₁ raises every bar, w₂ mostly lifts the 4-bedroom one';
+    $('#pwOut').innerHTML=
+      'prediction for every flat at once:  X·w\n'+
+      'w = (<span class="c">'+nice(w1)+'</span>, <span class="c">'+nice(w2)+'</span>)   ·   '+
+      'exact hits: <span class="p">'+hits+' / 4</span>\n'+
+      'total squared miss: <span class="y">'+nice(sse)+'</span>   (lowest possible ≈ 4.6)\n'+msg;
+  }
+  render();
+});
+
+/* ============ mobile chrome: keep the active nav pill in view ============ */
+window.__demos.push(function(){
+  const nav=$('#pillnav'); if(!nav)return;
+  let last=null;
+  const sync=()=>{
+    const a=nav.querySelector('a.active'); if(!a||a===last)return;
+    last=a;
+    const nr=nav.getBoundingClientRect(), ar=a.getBoundingClientRect();
+    if(ar.left<nr.left+6||ar.right>nr.right-6){
+      nav.scrollTo({left:nav.scrollLeft+(ar.left-nr.left)-nr.width/2+ar.width/2,
+                    behavior:'smooth'});
+    }
+  };
+  window.addEventListener('scroll',()=>{clearTimeout(window.__pillT);
+    window.__pillT=setTimeout(sync,110);},{passive:true});
+  sync();
+});
+
+/* ============ boot ============ */
+window.addEventListener('load',()=>{ runDemos(); initChrome(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stacking Hinges — How ReLU Units Approximate a Curve</title>
+<style>
+  :root{
+    --paper:#eef1f5;
+    --paper-2:#e6eaef;
+    --ink:#16263d;          /* navy */
+    --ink-soft:#3a506b;
+    --steel:#4f7298;        /* target curve */
+    --steel-faint:rgba(79,114,152,.20);
+    --gold:#c0892b;         /* approximation */
+    --gold-soft:rgba(192,137,43,.16);
+    --rule:#c9d2db;
+    --good:#3f7d5a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:980px;margin:0 auto;padding:28px 20px 56px;}
+  header{border-bottom:1px solid var(--rule);padding-bottom:16px;margin-bottom:20px;}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);
+    font-weight:600;margin:0 0 8px;}
+  h1{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    font-weight:600;font-size:clamp(24px,4.4vw,36px);line-height:1.12;margin:0 0 8px;letter-spacing:-.01em;}
+  .lede{margin:0;max-width:60ch;color:var(--ink-soft);font-size:15px;line-height:1.5;}
+
+  .stage{background:linear-gradient(180deg,#fbfcfd,#f3f6f9);border:1px solid var(--rule);
+    border-radius:10px;padding:10px;box-shadow:0 1px 0 #fff inset, 0 8px 28px -22px rgba(22,38,61,.5);}
+  canvas{display:block;width:100%;height:auto;border-radius:6px;}
+
+  .legend{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:center;
+    margin:12px 2px 0;font-size:13px;color:var(--ink-soft);}
+  .legend b{font-weight:600;color:var(--ink)}
+  .swatch{display:inline-block;width:22px;height:0;vertical-align:middle;margin-right:7px;border-radius:2px;}
+  .sw-target{border-top:2.5px dashed var(--steel)}
+  .sw-approx{border-top:3px solid var(--gold)}
+  .sw-hinge{border-top:2px solid rgba(79,114,152,.5)}
+
+  .panel{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;margin-top:22px;align-items:start;}
+  @media (max-width:720px){.panel{grid-template-columns:1fr}}
+
+  .group{margin-bottom:18px}
+  .label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+    font-weight:600;margin:0 0 9px;}
+
+  .seg{display:flex;flex-wrap:wrap;gap:6px;}
+  .seg button{font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--rule);
+    background:#fff;color:var(--ink-soft);border-radius:999px;cursor:pointer;transition:.15s;}
+  .seg button:hover{border-color:var(--steel);color:var(--ink)}
+  .seg button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .seg button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+  .sliderrow{display:flex;align-items:center;gap:14px}
+  input[type=range]{flex:1;accent-color:var(--gold);height:24px}
+  input[type=range]:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+  .count{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:22px;font-weight:600;
+    min-width:2.4ch;text-align:right;color:var(--ink)}
+  .count small{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;text-align:right}
+
+  .checks{display:flex;flex-direction:column;gap:10px}
+  .chk{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;color:var(--ink)}
+  .chk input{width:17px;height:17px;accent-color:var(--ink)}
+
+  .build{font:inherit;font-size:14px;font-weight:600;padding:10px 16px;border-radius:8px;
+    border:1px solid var(--gold);background:var(--gold);color:#fff;cursor:pointer;transition:.15s;}
+  .build:hover{filter:brightness(1.05)}
+  .build:disabled{opacity:.55;cursor:default}
+  .build:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+  .readout{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:16px 16px 14px;}
+  .eq{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:16px;color:var(--ink);
+    line-height:1.55;border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:12px;}
+  .eq i{font-style:italic}
+  .eq .relu{font-style:normal;font-weight:600}
+  .metrics{display:flex;gap:18px}
+  .metric{flex:1}
+  .metric .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  .metric .v{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:21px;font-weight:600;color:var(--ink);margin-top:2px}
+  .bar{height:6px;border-radius:3px;background:var(--paper-2);margin-top:8px;overflow:hidden}
+  .bar > span{display:block;height:100%;background:var(--good);border-radius:3px;transition:width .25s ease}
+
+  .note{margin-top:22px;padding:14px 16px;border-left:3px solid var(--gold);background:var(--gold-soft);
+    border-radius:0 8px 8px 0;font-size:14px;line-height:1.55;color:var(--ink);}
+  .note b{font-weight:600}
+  footer{margin-top:30px;font-size:12px;color:var(--ink-soft);border-top:1px solid var(--rule);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Universal approximation · intuition first</p>
+    <h1>A curve is just a pile of hinges</h1>
+    <p class="lede">One ReLU is a single bend. Add more bends, each kicking in at its own point, and a
+      smooth nonlinear target emerges from straight pieces. Drag the dial — or press <b>Build it up</b> — and watch.</p>
+  </header>
+
+  <div class="stage">
+    <canvas id="plot" aria-label="Plot of a target curve and its ReLU approximation"></canvas>
+  </div>
+  <div class="legend">
+    <span><span class="swatch sw-target"></span><b>Target</b> f(x)</span>
+    <span><span class="swatch sw-approx"></span><b>ReLU approximation</b> f&#770;(x)</span>
+    <span><span class="swatch sw-hinge"></span>individual ReLU outputs</span>
+  </div>
+
+  <div class="panel">
+    <div>
+      <div class="group">
+        <p class="label">Target function</p>
+        <div class="seg" id="targets" role="group" aria-label="Choose target function"></div>
+      </div>
+
+      <div class="group">
+        <p class="label">ReLU units (hinges)</p>
+        <div class="sliderrow">
+          <input id="units" type="range" min="1" max="24" value="3" step="1"
+                 aria-label="Number of ReLU units" />
+          <span class="count"><span id="countVal">3</span><small>units</small></span>
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="label">Show</p>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" id="showHinges" /> Individual ReLU outputs (the raw hinges)</label>
+          <label class="chk"><input type="checkbox" id="showAnchors" checked /> Anchor points where f&#770; meets f</label>
+        </div>
+      </div>
+
+      <button class="build" id="build">Build it up ▸</button>
+    </div>
+
+    <div class="readout">
+      <div class="eq">
+        f&#770;(<i>x</i>) = <i>f</i>(<i>c</i>&#8320;) +
+        <span style="white-space:nowrap">&Sigma;<sub>i</sub> &gamma;<sub>i</sub>·<span class="relu">ReLU</span>(<i>x</i> &minus; <i>c</i><sub>i</sub>)</span>
+        <div style="font-size:12.5px;color:var(--ink-soft);margin-top:8px;font-family:ui-sans-serif,system-ui">
+          Each unit adds a bend at <i>c<sub>i</sub></i>; its weight &gamma;<sub>i</sub> is exactly the
+          <b>change in slope</b> there. The bends sum to the gold curve.
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric">
+          <div class="k">Hinges</div>
+          <div class="v" id="mUnits">3</div>
+        </div>
+        <div class="metric">
+          <div class="k">RMS error</div>
+          <div class="v" id="mRmse">—</div>
+          <div class="bar"><span id="mBar" style="width:0%"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>The whole idea.</b> A continuous piecewise-linear function with bends at <i>c</i>&#8321;…<i>c</i><sub>n</sub>
+    can be written as a sum of ReLUs, where each weight is the slope jump at that bend. So a single hidden ReLU
+    layer is a <b>bend factory</b>: enough hinges, placed densely, trace any smooth curve as closely as you like.
+    That is the universal approximation theorem, made visible.
+  </div>
+
+  <footer>Interactive companion · piecewise-linear interpolation via ReLU units. Domain fixed to [&minus;3, 3].</footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const L = -3, R = 3;
+
+  const TARGETS = {
+    "Sine":     { f: x => Math.sin(1.9*x) },
+    "S-curve":  { f: x => 2.2*Math.tanh(1.6*x) },
+    "Parabola": { f: x => 0.55*x*x - 1.6 },
+    "Bump":     { f: x => 2.6*Math.exp(-1.4*x*x) - 1.0 },
+    "Wiggle":   { f: x => Math.sin(1.9*x) + 0.45*Math.cos(3.7*x) },
+  };
+  let current = "Wiggle";
+  let units = 3;
+  let showHinges = false;
+  let showAnchors = true;
+
+  // ---- ReLU construction: exact piecewise-linear interpolant of f at evenly spaced anchors ----
+  function buildModel(f, n){
+    const xs = [];
+    for (let j=0;j<=n;j++) xs.push(L + j*(R-L)/n);
+    const slope = [];
+    for (let j=0;j<n;j++) slope.push((f(xs[j+1])-f(xs[j]))/(xs[j+1]-xs[j]));
+    const c = [xs[0]], g = [slope[0]];
+    for (let j=1;j<n;j++){ c.push(xs[j]); g.push(slope[j]-slope[j-1]); }
+    const base = f(xs[0]);
+    const eval_ = x => { let y=base; for(let i=0;i<c.length;i++){const t=x-c[i]; if(t>0) y+=g[i]*t;} return y; };
+    return { xs, c, g, base, eval_ };
+  }
+
+  // ---- canvas / geometry ----
+  const cv = document.getElementById("plot");
+  const ctx = cv.getContext("2d");
+  let W=0, H=0, dpr=1;
+  const PAD = { l:46, r:18, t:18, b:34 };
+
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    const cssW = cv.clientWidth;
+    const cssH = Math.max(300, Math.round(cssW * 0.56));
+    cv.width = Math.round(cssW*dpr);
+    cv.height = Math.round(cssH*dpr);
+    cv.style.height = cssH + "px";
+    W = cssW; H = cssH;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    draw(units);
+  }
+
+  function yRange(f){
+    let lo=Infinity, hi=-Infinity;
+    for(let i=0;i<=400;i++){ const x=L+i*(R-L)/400; const y=f(x); if(y<lo)lo=y; if(y>hi)hi=y; }
+    const pad=(hi-lo)*0.16 || 1;
+    return [lo-pad, hi+pad];
+  }
+
+  function draw(n){
+    const f = TARGETS[current].f;
+    const [ymin,ymax] = yRange(f);
+    const model = buildModel(f, n);
+
+    const px = x => PAD.l + (x-L)/(R-L) * (W-PAD.l-PAD.r);
+    const py = y => PAD.t + (ymax-y)/(ymax-ymin) * (H-PAD.t-PAD.b);
+
+    ctx.clearRect(0,0,W,H);
+
+    // grid
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(79,114,152,.14)";
+    ctx.fillStyle = "#5b6b7e";
+    ctx.font = "11px ui-monospace,Menlo,Consolas,monospace";
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for(let gx=-3; gx<=3; gx++){
+      const X=px(gx);
+      ctx.beginPath(); ctx.moveTo(X,PAD.t); ctx.lineTo(X,H-PAD.b); ctx.stroke();
+      ctx.fillText(gx.toString(), X, H-PAD.b+6);
+    }
+    ctx.textAlign="right"; ctx.textBaseline="middle";
+    const yt0=Math.ceil(ymin), yt1=Math.floor(ymax);
+    for(let gy=yt0; gy<=yt1; gy++){
+      const Y=py(gy);
+      ctx.beginPath(); ctx.moveTo(PAD.l,Y); ctx.lineTo(W-PAD.r,Y); ctx.stroke();
+      ctx.fillText(gy.toString(), PAD.l-8, Y);
+    }
+    // zero axis
+    if(ymin<0 && ymax>0){
+      ctx.strokeStyle="rgba(22,38,61,.35)"; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.moveTo(PAD.l,py(0)); ctx.lineTo(W-PAD.r,py(0)); ctx.stroke();
+    }
+
+    // individual ReLU outputs (raw hinges), drawn from baseline 0
+    if(showHinges){
+      ctx.lineWidth = 1.4;
+      for(let i=0;i<model.c.length;i++){
+        ctx.strokeStyle = "rgba(79,114,152,.40)";
+        ctx.beginPath();
+        let started=false;
+        for(let s=0;s<=160;s++){
+          const x=L+s*(R-L)/160;
+          const t=x-model.c[i];
+          const y=(t>0? model.g[i]*t : 0);
+          const X=px(x), Y=py(y);
+          if(!started){ctx.moveTo(X,Y);started=true;} else ctx.lineTo(X,Y);
+        }
+        ctx.stroke();
+        // activation tick on x-axis
+        ctx.fillStyle="rgba(79,114,152,.6)";
+        ctx.beginPath(); ctx.arc(px(model.c[i]), py(0), 2.4, 0, 7); ctx.fill();
+      }
+    }
+
+    // target (dashed steel)
+    ctx.setLineDash([7,5]);
+    ctx.strokeStyle = "#4f7298";
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    for(let s=0;s<=600;s++){ const x=L+s*(R-L)/600; const X=px(x),Y=py(f(x)); s?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // approximation (gold) — piecewise linear through anchors
+    ctx.strokeStyle = "#c0892b";
+    ctx.lineWidth = 3.4;
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    for(let i=0;i<model.xs.length;i++){ const X=px(model.xs[i]),Y=py(model.eval_(model.xs[i])); i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }
+    ctx.stroke();
+
+    // anchors
+    if(showAnchors){
+      for(const a of model.xs){
+        const X=px(a), Y=py(f(a));
+        ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(X,Y,4.4,0,7); ctx.fill();
+        ctx.strokeStyle="#c0892b"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(X,Y,4.4,0,7); ctx.stroke();
+      }
+    }
+
+    // error metrics
+    let sse=0, k=0;
+    for(let s=0;s<=800;s++){ const x=L+s*(R-L)/800; const e=model.eval_(x)-f(x); sse+=e*e; k++; }
+    const rmse = Math.sqrt(sse/k);
+    document.getElementById("mUnits").textContent = n;
+    document.getElementById("mRmse").textContent = rmse.toFixed(3);
+    // bar: 1 unit ≈ empty, shrinking error fills toward "good". Normalize against the n=1 error.
+    if(n===1) draw._e1 = rmse;
+    const e1 = draw._e1 || rmse || 1;
+    const filled = Math.max(0, Math.min(1, 1 - rmse/e1));
+    document.getElementById("mBar").style.width = (filled*100).toFixed(0)+"%";
+  }
+
+  // ---- build target buttons ----
+  const segWrap = document.getElementById("targets");
+  Object.keys(TARGETS).forEach((name,i)=>{
+    const b=document.createElement("button");
+    b.textContent=name; b.setAttribute("aria-pressed", name===current ? "true":"false");
+    b.addEventListener("click",()=>{
+      current=name;
+      [...segWrap.children].forEach(c=>c.setAttribute("aria-pressed", c===b?"true":"false"));
+      draw._e1 = undefined;                 // recompute baseline error for the bar
+      // recompute baseline at n=1 silently, then redraw current
+      const f=TARGETS[current].f; const m1=buildModel(f,1);
+      let sse=0; for(let s=0;s<=800;s++){const x=L+s*(R-L)/800;const e=m1.eval_(x)-f(x);sse+=e*e;}
+      draw._e1=Math.sqrt(sse/801);
+      draw(units);
+    });
+    segWrap.appendChild(b);
+  });
+
+  // ---- controls ----
+  const slider=document.getElementById("units");
+  const countVal=document.getElementById("countVal");
+  slider.addEventListener("input",()=>{ units=+slider.value; countVal.textContent=units; draw(units); });
+
+  document.getElementById("showHinges").addEventListener("change",e=>{ showHinges=e.target.checked; draw(units); });
+  document.getElementById("showAnchors").addEventListener("change",e=>{ showAnchors=e.target.checked; draw(units); });
+
+  const buildBtn=document.getElementById("build");
+  buildBtn.addEventListener("click",()=>{
+    const target=+slider.value;
+    if(reduceMotion){ units=target; draw(units); return; }
+    buildBtn.disabled=true;
+    let n=1; slider.value=1; units=1; countVal.textContent=1;
+    const stepMs=Math.max(70, 900/target);
+    draw(1);
+    const tick=()=>{
+      n++;
+      if(n>target){ buildBtn.disabled=false; return; }
+      units=n; slider.value=n; countVal.textContent=n; draw(n);
+      setTimeout(tick, stepMs);
+    };
+    setTimeout(tick, stepMs);
+  });
+
+  // init baseline error for bar
+  (()=>{ const f=TARGETS[current].f; const m1=buildModel(f,1);
+    let sse=0; for(let s=0;s<=800;s++){const x=L+s*(R-L)/800;const e=m1.eval_(x)-f(x);sse+=e*e;}
+    draw._e1=Math.sqrt(sse/801); })();
+
+  window.addEventListener("resize", resize);
+  resize();
+})();
+</script>
+</body>
+</html>
